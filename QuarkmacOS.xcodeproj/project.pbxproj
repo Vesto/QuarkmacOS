@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		BF1512BB1DAEF8C800C39871 /* QuarkmacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1512C11DAEF8E100C39871 /* Quark.swift */; };
+		BF15130D1DAEFAFB00C39871 /* Button+Quark.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15130C1DAEFAFB00C39871 /* Button+Quark.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -16,6 +17,7 @@
 		BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QuarkmacOS.h; sourceTree = "<group>"; };
 		BF1512BA1DAEF8C800C39871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF1512C11DAEF8E100C39871 /* Quark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quark.swift; sourceTree = "<group>"; };
+		BF15130C1DAEFAFB00C39871 /* Button+Quark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Button+Quark.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +52,7 @@
 			children = (
 				BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */,
 				BF1512C11DAEF8E100C39871 /* Quark.swift */,
+				BF15130C1DAEFAFB00C39871 /* Button+Quark.swift */,
 				BF1512BA1DAEF8C800C39871 /* Info.plist */,
 			);
 			path = QuarkmacOS;
@@ -135,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF15130D1DAEFAFB00C39871 /* Button+Quark.swift in Sources */,
 				BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,6 +304,7 @@
 				BF1512C01DAEF8C800C39871 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

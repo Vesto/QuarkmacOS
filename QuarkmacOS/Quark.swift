@@ -10,17 +10,22 @@ import Cocoa
 import JavaScriptCore
 
 public class Quark {
+    /// A map of the classes to export to the `JSContext`
+    private let exports: [String: JSExport.Type] = [
+        "Button": QKButton.self
+    ]
+    
     /// The window to present Quark in
-    let window: NSWindow
+    public let window: NSWindow
     
     /// The context in which the main script runs in
-    let context: JSContext
+    public let context: JSContext
     
     /// The script to be executed when `start` called
-    let script: String
+    public let script: String
     
     /// Wether or not Quark is running
-    private(set) var running: Bool = false
+    public private(set) var running: Bool = false
     
     /**
      Creates a new Quark instance and starts it.
@@ -29,22 +34,29 @@ public class Quark {
      - parameter virtualMachine: An optional virtual machine that can be
      provided.
      */
-    init(script: String, virtualMachine: JSVirtualMachine? = nil) {
+    public init(script: String, virtualMachine: JSVirtualMachine? = nil) {
         // Create the window
         window = NSWindow()
         
         // Create the context
-        context = JSContext(virtualMachine: virtualMachine)
+        if let virtualMachine = virtualMachine {
+            context = JSContext(virtualMachine: virtualMachine)
+        } else {
+            context = JSContext()
+        }
         
         // Save the script
         self.script = script
+        
+        // Add the exports to the context
+        addExports()
     }
     
     /**
      Starts the Quark instance, concequently showing the window and
      executing the script.
      */
-    func start() {
+    public func start() {
         if !running {
             // Save the running state
             running = true
@@ -54,6 +66,16 @@ public class Quark {
             
             // Evaluates the script
             context.evaluateScript(script)
+        }
+    }
+    
+    /**
+     Adds exports to the `JSContext` for the appropriate classes.
+     */
+    private func addExports() {
+        // Go through every export and expose it to the context
+        for (key, object) in exports {
+            context.setObject(object, forKeyedSubscript: NSString(string: key))
         }
     }
 }
