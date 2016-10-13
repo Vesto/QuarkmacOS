@@ -1,5 +1,5 @@
 //
-//  CGRect+Quark.swift
+//  QKButton.swift
 //  QuarkmacOS
 //
 //  Created by Nathan Flurry on 10/12/16.
