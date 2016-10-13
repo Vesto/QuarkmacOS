@@ -8,11 +8,16 @@
 
 import Cocoa
 import JavaScriptCore
+import QuarkCore
 
 public class Quark {
     /// A map of the classes to export to the `JSContext`
-    private let exports: [String: JSExport.Type] = [
-        "Button": QKButton.self
+    private let exports: [String: Any] = [
+        // UI
+        "Button": QKButton.self,
+        
+        // Core
+        "Logger": Logger.self
     ]
     
     /// The window to present Quark in
