@@ -9,12 +9,30 @@
 import Cocoa
 import QuarkExports
 
+/*
+ Can't do this because of @objc:
+ 
+ class QKKView<ViewType: NSView> {
+    var underlyingView: ViewType? = nil
+ }
+ */
+
 @objc
 public class QKView: NSObject, View {
-    var underlyingView: NSView
+    /// Returns the underlying `NSView` for the `QKView`
+    public var nsView: NSView
     
-    init(underlyingView view: NSView) {
-        underlyingView = view
+    /**
+     Creates a new `QKView` with an underlying `NSView`.
+ 
+     - parameter nsView: The `NSView` that drives the `QKView`.
+     */
+    public init(nsView view: NSView) throws {
+        nsView = view
+    }
+    
+    required public override convenience init() {
+        try! self.init(nsView: NSView()) // TODO: Safety
     }
 }
 
@@ -22,10 +40,10 @@ public class QKView: NSObject, View {
 extension QKView {
     public var rect: Rect {
         get {
-            return QKRect(cgRect: underlyingView.frame)
+            return QKRect(cgRect: nsView.frame)
         }
         set {
-            underlyingView.frame = newValue.cgRect
+            nsView.frame = newValue.cgRect
         }
     }
 }
@@ -33,30 +51,35 @@ extension QKView {
 /* View hierarchy */
 extension QKView {
     public var subviews: [View] {
-        return underlyingView.subviews.map { QKView(underlyingView: $0) }
+        return nsView.subviews.map { try! QKView(nsView: $0) } // TODO: Safety
     }
     
     public var superview: View? {
-        if let superview = underlyingView.superview {
-            return QKView(underlyingView: superview)
+        if let superview = nsView.superview {
+            return try! QKView(nsView: superview) // TODO: Safety
         } else {
             return nil
         }
     }
     
     public func addSubview(view: View) {
+        guard let view = view as? QKView else {
+            // TODO: Throw something
+            return
+        }
         
+        nsView.addSubview(view.nsView)
     }
     
     public func removeFromSuperview() {
-        
+        nsView.removeFromSuperview()
     }
 }
 
 /* Layout */
 extension QKView {
     public func layout() {
-        
+        // TODO: This
     }
 }
 
@@ -64,10 +87,10 @@ extension QKView {
 extension QKView {
     public var hidden: Bool {
         get {
-            return underlyingView.isHidden
+            return nsView.isHidden
         }
         set {
-            underlyingView.isHidden = newValue
+            nsView.isHidden = newValue
         }
     }
 }
@@ -76,28 +99,28 @@ extension QKView {
 extension QKView {
     public var alpha: Double {
         get {
-            return underlyingView.alphaValue.double
+            return nsView.alphaValue.double
         }
         set {
-            underlyingView.alphaValue = newValue.cgFloat
+            nsView.alphaValue = newValue.cgFloat
         }
     }
     
     public var shadow: Shadow {
         get {
-            return QKShadow(nsShadow: underlyingView.shadow!)
+            return QKShadow(nsShadow: nsView.shadow!)
         }
         set {
-            underlyingView.shadow = newValue.nsShadow
+            nsView.shadow = newValue.nsShadow
         }
     }
     
     public var cornerRadius: Double {
         get {
-            return underlyingView.layer!.cornerRadius.double
+            return nsView.layer!.cornerRadius.double
         }
         set {
-            underlyingView.layer!.cornerRadius = newValue.cgFloat
+            nsView.layer!.cornerRadius = newValue.cgFloat
         }
     }
 }

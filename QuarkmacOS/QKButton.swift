@@ -8,9 +8,40 @@
 
 import QuarkExports
 
-final class QKButton: NSButton, Button {
-    convenience public init(title: String) {
-        self.init(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
-        self.title = title
+enum QKError: Error {
+    case invalidViewType(type: AnyClass)
+}
+
+final class QKButton: QKView, Button {
+    var nsButton: NSButton {
+        return nsView as! NSButton // TODO: Find a safe way for this
+    }
+    
+    override convenience init(nsView view: NSView) throws {
+        // Try to convert the view to a button or throw an error
+        if let button = view as? NSButton {
+            try self.init(nsButton: button)
+        } else {
+            throw QKError.invalidViewType(type: NSButton.self)
+        }
+    }
+    
+    init(nsButton button: NSButton) throws {
+        try super.init(nsView: button)
+    }
+    
+    convenience required init() {
+        try! self.init(nsButton: NSButton()) // TODO: Safety
+    }
+}
+
+extension QKButton {
+    public var title: String {
+        get {
+            return nsButton.title
+        }
+        set {
+            nsButton.title = newValue
+        }
     }
 }

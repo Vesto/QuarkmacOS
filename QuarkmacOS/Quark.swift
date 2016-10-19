@@ -14,7 +14,14 @@ public class Quark {
     /// A map of the classes to export to the `JSContext`
     private let exports: [String: Any] = [
         // UI
+        "View": QKView.self,
         "Button": QKButton.self,
+        
+        // Data types
+        "Rect": QKRect.self,
+        "Point": QKPoint.self,
+        "Size": QKSize.self,
+        "Shadow": QKShadow.self,
         
         // Core
         "Logger": Logger.self
