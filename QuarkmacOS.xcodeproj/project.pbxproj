@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BF0088DB1DB806BE002CBA91 /* CGFloat+Magic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DA1DB806BE002CBA91 /* CGFloat+Magic.swift */; };
+		BF0088DD1DB806DD002CBA91 /* Double+Magic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DC1DB806DD002CBA91 /* Double+Magic.swift */; };
+		BF0088DF1DB8075B002CBA91 /* QKShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DE1DB8075B002CBA91 /* QKShadow.swift */; };
 		BF1512BB1DAEF8C800C39871 /* QuarkmacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1512C11DAEF8E100C39871 /* Quark.swift */; };
 		BF15130D1DAEFAFB00C39871 /* QKButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15130C1DAEFAFB00C39871 /* QKButton.swift */; };
@@ -17,6 +20,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BF0088DA1DB806BE002CBA91 /* CGFloat+Magic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Magic.swift"; sourceTree = "<group>"; };
+		BF0088DC1DB806DD002CBA91 /* Double+Magic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Double+Magic.swift"; sourceTree = "<group>"; };
+		BF0088DE1DB8075B002CBA91 /* QKShadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKShadow.swift; sourceTree = "<group>"; };
 		BF1512B61DAEF8C800C39871 /* QuarkmacOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QuarkmacOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QuarkmacOS.h; sourceTree = "<group>"; };
 		BF1512BA1DAEF8C800C39871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -39,6 +45,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		BF0088D91DB806AA002CBA91 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				BF0088DA1DB806BE002CBA91 /* CGFloat+Magic.swift */,
+				BF0088DC1DB806DD002CBA91 /* Double+Magic.swift */,
+			);
+			name = Utils;
+			sourceTree = "<group>";
+		};
 		BF1512AC1DAEF8C800C39871 = {
 			isa = PBXGroup;
 			children = (
@@ -62,6 +77,7 @@
 				BF1512C11DAEF8E100C39871 /* Quark.swift */,
 				BF1513381DAF3C2E00C39871 /* UI */,
 				BF1513391DAF3C3600C39871 /* Data Types */,
+				BF0088D91DB806AA002CBA91 /* Utils */,
 				BF1512BA1DAEF8C800C39871 /* Info.plist */,
 			);
 			path = QuarkmacOS;
@@ -82,6 +98,7 @@
 				BF15133A1DAF3C4500C39871 /* QKRect.swift */,
 				BF15133C1DAF3C6D00C39871 /* QKPoint.swift */,
 				BF15133E1DAF3C7500C39871 /* QKSize.swift */,
+				BF0088DE1DB8075B002CBA91 /* QKShadow.swift */,
 			);
 			name = "Data Types";
 			sourceTree = "<group>";
@@ -166,9 +183,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF0088DB1DB806BE002CBA91 /* CGFloat+Magic.swift in Sources */,
 				BF15133B1DAF3C4500C39871 /* QKRect.swift in Sources */,
 				BF15133D1DAF3C6D00C39871 /* QKPoint.swift in Sources */,
 				BF462F2E1DAFF6C80037C7F0 /* QKView.swift in Sources */,
+				BF0088DF1DB8075B002CBA91 /* QKShadow.swift in Sources */,
+				BF0088DD1DB806DD002CBA91 /* Double+Magic.swift in Sources */,
 				BF15130D1DAEFAFB00C39871 /* QKButton.swift in Sources */,
 				BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */,
 				BF15133F1DAF3C7500C39871 /* QKSize.swift in Sources */,

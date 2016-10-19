@@ -11,9 +11,8 @@ import QuarkExports
 
 @objc
 public class QKSize: NSObject, Size {
-    public var width: Double = 0.0
-    
-    public var height: Double = 0.0
+    public var width: Double
+    public var height: Double
     
     public required init(width: Double, height: Double) {
         self.width = width
@@ -22,7 +21,7 @@ public class QKSize: NSObject, Size {
 }
 
 extension Size {
-    /// Returns a `CGSize` instance equivalent to this `QKSize`
+    /// Returns a `CGSize` instance equivalent to this `Size`
     public var cgSize: CGSize {
         return CGSize(width: width, height: height)
     }

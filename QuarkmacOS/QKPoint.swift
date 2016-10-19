@@ -11,18 +11,9 @@ import QuarkExports
 
 @objc
 public class QKPoint: NSObject, Point {
-    /// The x position of the point
     public var x: Double
-    
-    /// The y position of the point
     public var y: Double
     
-    /**
-     Creates a `QKPoint` with a given `x` and `y` position.
-     
-     - parameter x: The x position of the point.
-     - parameter y: The y position of the point.
-     */
     public required init(x: Double, y: Double) {
         self.x = x
         self.y = y
@@ -30,7 +21,7 @@ public class QKPoint: NSObject, Point {
 }
 
 public extension Point {
-    /// Returns a `CGPoint` instance equivalent to this `QKPoint`
+    /// Returns a `CGPoint` instance equivalent to this `Point`
     public var cgPoint: CGPoint {
         return CGPoint(x: x, y: y)
     }

@@ -12,30 +12,29 @@ import QuarkExports
 @objc
 class QKRect: NSObject, Rect {
     var origin: Point
-    
     var size: Size
     
     required init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
+}
+
+extension Rect {
+    /// Returns a `CGRect` equivilent to this `QKRect`
+    var cgRect: CGRect {
+        return CGRect(origin: origin.cgPoint, size: size.cgSize)
+    }
     
     /**
-     Creates a `QKRect` equivalent to the `CGRect`.
+     Creates a `Rect` equivalent to the `CGRect`.
      
      - parameter cgRect: The `CGRect` to convert to a `Rect`
      */
-    public convenience init(cgRect: CGRect) {
+    public init(cgRect: CGRect) {
         self.init(
             origin: QKPoint(cgPoint: cgRect.origin),
             size: QKSize(cgSize: cgRect.size)
         )
-    }
-}
-
-extension Rect { // TODO: Move appropriate parts of this extension to QuartzExport
-    /// Returns a `CGRect` equivilent to this `QKRect`
-    var cgRect: CGRect {
-        return CGRect(origin: origin.cgPoint, size: size.cgSize)
     }
 }
