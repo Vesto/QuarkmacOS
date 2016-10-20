@@ -62,13 +62,13 @@ extension QKView {
         }
     }
     
-    public func addSubview(view: View) {
-        guard let view = view as? QKView else {
-            // TODO: Throw something
-            return
+    public func addSubview(_ view: View) {
+        if let view = view as? QKView {
+            nsView.addSubview(view.nsView)
+        } else {
+            // TODO: Handle error
+            print("Invalid view type.")
         }
-        
-        nsView.addSubview(view.nsView)
     }
     
     public func removeFromSuperview() {
