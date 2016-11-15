@@ -10,13 +10,6 @@ import Cocoa
 import JavaScriptCore
 import QuarkCore
 
-/*
- Notes:
- 
- - Can't use exported protocols because they refer to other generics which don't bridge.
- - Make a radar about generics in JSCore
-*/
-
 public class Quark {
     /// A map of the classes to export to the `JSContext`
     private let exports: [String: Any] = [
