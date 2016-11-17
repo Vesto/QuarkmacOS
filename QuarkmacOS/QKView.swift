@@ -18,40 +18,10 @@ import QuarkExports
  }
  */
 
-public protocol NSViewOverrideProtocol {
-    // Callbacks
-    var layoutCallback: (() -> Void)? { get set }
-    
-    // `NSView`-specific properties
-    var frame: CGRect { get set }
-    var isHidden: Bool { get set }
-    var alphaValue: CGFloat { get set }
-    var layer: CALayer? { get set }
-    var wantsLayer: Bool { get set }
-    var shadow: NSShadow? { get set }
-    var superview: NSView? { get }
-    var subviews: [NSView] { get }
-    func addSubview(_ view: NSView)
-    func removeFromSuperview()
-}
-
-/// An override class that manages things only subclasses can do.
-public class NSViewOverride: NSView, NSViewOverrideProtocol {
-    // Callbacks
-    public var layoutCallback: (() -> Void)?
-    
-    // Overrides
-    public override func layout() {
-        super.layout()
-        
-        layoutCallback?()
-    }
-}
-
 @objc
 public class QKView: NSObject, View {
     /// Returns the underlying `NSView` for the `QKView`
-    public private(set) var nsView: NSViewOverrideProtocol
+    public private(set) var nsView: NSView
     public var caLayer: CALayer {
         if let layer = nsView.layer { // Return the existing layer
             return layer
@@ -65,7 +35,7 @@ public class QKView: NSObject, View {
  
      - parameter nsView: The `NSView` that drives the `QKView`.
      */
-    public init(nsView view: NSViewOverrideProtocol) throws {
+    public init(nsView view: NSView) throws {
         // Set the view
         nsView = view
         
@@ -81,7 +51,7 @@ public class QKView: NSObject, View {
      Creates a new `QKView` with an empty `NSView`.
      */
     required public override convenience init() {
-        try! self.init(nsView: NSViewOverride())
+        try! self.init(nsView: NSView())
     }
     
     /// Adds a layer to the NSView.
@@ -92,15 +62,10 @@ public class QKView: NSObject, View {
         nsView.layer = layer
         return layer
     }
-    
-    /// Adds callbacks to the `NSViewOverride`.
-    private func addOverrideCallbacks() {
-        nsView.layoutCallback = {
-            
-        }
-    }
+}
 
-    // MARK: - Positioning
+/* Positioning */
+extension QKView {
     public var rect: Rect {
         get {
             return QKRect(cgRect: nsView.frame)
@@ -109,16 +74,16 @@ public class QKView: NSObject, View {
             nsView.frame = newValue.cgRect
         }
     }
-    
-    // MARK: - View heiarchy
+}
+
+/* View hierarchy */
+extension QKView {
     public var subviews: [View] {
-        return nsView.subviews
-            .filter { $0 is NSViewOverride } // Filter to `NSViewOverride`
-            .map { try! QKView(nsView: $0 as! NSViewOverride) } // Map to `QKView`
+        return nsView.subviews.map { try! QKView(nsView: $0) } // TODO: Safety
     }
     
     public var superview: View? {
-        if let superview = nsView.superview as? NSViewOverride {
+        if let superview = nsView.superview {
             return try! QKView(nsView: superview) // TODO: Safety
         } else {
             return nil
@@ -126,8 +91,8 @@ public class QKView: NSObject, View {
     }
     
     public func addSubview(_ view: View) {
-        if let view = view as? QKView, let nsView = view.nsView as? NSView {
-            nsView.addSubview(nsView)
+        if let view = view as? QKView {
+            nsView.addSubview(view.nsView)
         } else {
             // TODO: Handle error
             print("Invalid view type.")
@@ -137,11 +102,15 @@ public class QKView: NSObject, View {
     public func removeFromSuperview() {
         nsView.removeFromSuperview()
     }
+}
+
+/* Layout */
+extension QKView {
     
-    // MARK: - Layout
-    public var layoutCallback: JSValue?
-    
-    // MARK: - Visibility
+}
+
+/* Visibility */
+extension QKView {
     public var hidden: Bool {
         get {
             return nsView.isHidden
@@ -150,8 +119,10 @@ public class QKView: NSObject, View {
             nsView.isHidden = newValue
         }
     }
-    
-    // MARK: - Style
+}
+
+/* Style */
+extension QKView {
     public var backgroundColor: Color {
         get {
             if
