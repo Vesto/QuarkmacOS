@@ -8,6 +8,6 @@
 
 import Foundation
 
-enum QKError: Error {
+public enum QKError: Error {
     case invalidViewType(type: AnyClass)
 }

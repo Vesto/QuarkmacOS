@@ -10,13 +10,13 @@ import Cocoa
 import QuarkExports
 
 @objc
-class QKColor: NSObject, Color {
-    var red: Double
-    var green: Double
-    var blue: Double
-    var alpha: Double
+public class QKColor: NSObject, Color {
+    public var red: Double
+    public var green: Double
+    public var blue: Double
+    public var alpha: Double
     
-    required init(red: Double, green: Double, blue: Double, alpha: Double) {
+    required public init(red: Double, green: Double, blue: Double, alpha: Double) {
         self.red = red
         self.green = green
         self.blue = blue

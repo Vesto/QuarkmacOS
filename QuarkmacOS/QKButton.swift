@@ -7,14 +7,10 @@
 //
 
 import Cocoa
-import JavaScriptCore
+import QuarkExports
 
 @objc
-public protocol QKButtonExports: JSExport {
-    var title: String { get set }
-}
-
-final class QKButton: QKView, QKButtonExports {
+public class QKButton: QKView, Button {
     var nsButton: NSButton {
         return nsView as! NSButton // TODO: Find a safe way for this
     }
@@ -32,7 +28,7 @@ final class QKButton: QKView, QKButtonExports {
         try super.init(nsView: button)
     }
     
-    convenience required init() {
+    convenience required public init() {
         try! self.init(nsButton: NSButton()) // TODO: Safety
     }
 }

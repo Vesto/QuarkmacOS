@@ -10,11 +10,11 @@ import Cocoa
 import QuarkExports
 
 @objc
-class QKRect: NSObject, Rect {
-    var origin: Point
-    var size: Size
+public class QKRect: NSObject, Rect {
+    public var origin: Point
+    public var size: Size
     
-    required init(origin: Point, size: Size) {
+    required public init(origin: Point, size: Size) {
         self.origin = origin
         self.size = size
     }
