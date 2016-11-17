@@ -18,6 +18,55 @@ import QuarkExports
  }
  */
 
+// TODO: Clean this pile of crap up
+// TODO: Make the default `layout` get called
+@objc
+public protocol NSViewDelegate {
+    @objc optional func layoutCalled()
+}
+
+private var layoutCallbackKey: UInt8 = 0
+public extension NSView {
+    private static var viewDelegateKey = "viewDelegateKey"
+    
+    var viewDelegate: NSViewDelegate? {
+        get {
+            return objc_getAssociatedObject(self, &NSView.viewDelegateKey) as? NSViewDelegate
+        }
+        set(newValue) {
+            objc_setAssociatedObject(self, &NSView.viewDelegateKey, newValue ?? nil, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN) // Create weak reference
+        }
+    }
+    
+    public class func swizzle() {
+        // Replace layout with my custom method
+        method_exchangeImplementations(
+            class_getInstanceMethod(NSView.self, #selector(defaultLayout)),
+            class_getInstanceMethod(NSView.self, #selector(layout))
+        )
+        method_exchangeImplementations(
+            class_getInstanceMethod(NSView.self, #selector(layoutProxy)),
+            class_getInstanceMethod(NSView.self, #selector(layout))
+        )
+        
+        Swift.print("Swizzled")
+    }
+    
+    func defaultLayout() {
+        // Will be replaced with `layout`
+    }
+    
+    func layoutProxy() {
+//        Swift.print("layout")
+        
+        // Call the default layout method
+        defaultLayout()
+        
+        // Call the callback
+        viewDelegate?.layoutCalled?()
+    }
+}
+
 @objc
 public class QKView: NSObject, View {
     /// Returns the underlying `NSView` for the `QKView`
@@ -45,6 +94,9 @@ public class QKView: NSObject, View {
         if view.layer == nil {
             _ = addLayer()
         }
+        
+        // Register the events
+        registerEvents()
     }
     
     /**
@@ -52,6 +104,11 @@ public class QKView: NSObject, View {
      */
     required public override convenience init() {
         try! self.init(nsView: NSView())
+    }
+    
+    /// Registers the events for the `NSView`.
+    private func registerEvents() {
+        nsView.viewDelegate = self
     }
     
     /// Adds a layer to the NSView.
@@ -100,7 +157,7 @@ public class QKView: NSObject, View {
     }
     
     // MARK: Layout
-    // TODO: Layout handler
+    public var layoutHandler: JSValue?
     
     // MARK: Visibility
     public var hidden: Bool {
@@ -153,6 +210,12 @@ public class QKView: NSObject, View {
         set {
             nsView.layer!.cornerRadius = newValue.cgFloat
         }
+    }
+}
+
+extension QKView: NSViewDelegate {
+    public func layoutCalled() {
+        layoutHandler?.call(withArguments: [self])
     }
 }
 

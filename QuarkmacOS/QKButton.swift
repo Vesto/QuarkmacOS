@@ -11,8 +11,6 @@ import JavaScriptCore
 import QuarkExports
 import QuarkCore
 
-// TODO: Calling methods on sublcasses not working?
-
 @objc
 public class QKButton: QKView, Button {
     var nsButton: NSButton {
@@ -37,10 +35,6 @@ public class QKButton: QKView, Button {
     
     convenience required public init() {
         try! self.init(nsButton: NSButton()) // TODO: Safety
-    }
-    
-    public var testVar: Int {
-        return 5
     }
     
     /// Registers the events for the `NSButton`.
