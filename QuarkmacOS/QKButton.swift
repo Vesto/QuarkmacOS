@@ -10,27 +10,40 @@ import Cocoa
 import QuarkExports
 import QuarkCore
 
+/// An override class that manages things only subclasses can do.
+public class NSButtonOverride: NSButton, NSViewOverrideProtocol {
+    // Callbacks
+    public var layoutCallback: (() -> Void)?
+    
+    // Overrides
+    public override func layout() {
+        super.layout()
+        
+        layoutCallback?()
+    }
+}
+
 @objc
 public class QKButton: QKView, Button {
-    var nsButton: NSButton {
-        return nsView as! NSButton // TODO: Find a safe way for this
+    var nsButton: NSButtonOverride {
+        return nsView as! NSButtonOverride // TODO: Find a safe way for this
     }
     
-    override convenience init(nsView view: NSView) throws {
+    override convenience init(nsView view: NSViewOverrideProtocol) throws {
         // Try to convert the view to a button or throw an error
-        if let button = view as? NSButton {
+        if let button = view as? NSButtonOverride {
             try self.init(nsButton: button)
         } else {
-            throw QKError.invalidViewType(type: NSButton.self)
+            throw QKError.invalidViewType(type: NSButtonOverride.self)
         }
     }
     
-    init(nsButton button: NSButton) throws {
+    init(nsButton button: NSButtonOverride) throws {
         try super.init(nsView: button)
     }
     
     convenience required public init() {
-        try! self.init(nsButton: NSButton()) // TODO: Safety
+        try! self.init(nsButton: NSButtonOverride()) // TODO: Safety
     }
 }
 

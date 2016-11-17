@@ -18,10 +18,40 @@ import QuarkExports
  }
  */
 
+public protocol NSViewOverrideProtocol {
+    // Callbacks
+    var layoutCallback: (() -> Void)? { get set }
+    
+    // `NSView`-specific properties
+    var frame: CGRect { get set }
+    var isHidden: Bool { get set }
+    var alphaValue: CGFloat { get set }
+    var layer: CALayer? { get set }
+    var wantsLayer: Bool { get set }
+    var shadow: NSShadow? { get set }
+    var superview: NSView? { get }
+    var subviews: [NSView] { get }
+    func addSubview(_ view: NSView)
+    func removeFromSuperview()
+}
+
+/// An override class that manages things only subclasses can do.
+public class NSViewOverride: NSView, NSViewOverrideProtocol {
+    // Callbacks
+    public var layoutCallback: (() -> Void)?
+    
+    // Overrides
+    public override func layout() {
+        super.layout()
+        
+        layoutCallback?()
+    }
+}
+
 @objc
 public class QKView: NSObject, View {
     /// Returns the underlying `NSView` for the `QKView`
-    public private(set) var nsView: NSView
+    public private(set) var nsView: NSViewOverrideProtocol
     public var caLayer: CALayer {
         if let layer = nsView.layer { // Return the existing layer
             return layer
@@ -35,7 +65,7 @@ public class QKView: NSObject, View {
  
      - parameter nsView: The `NSView` that drives the `QKView`.
      */
-    public init(nsView view: NSView) throws {
+    public init(nsView view: NSViewOverrideProtocol) throws {
         // Set the view
         nsView = view
         
@@ -51,7 +81,7 @@ public class QKView: NSObject, View {
      Creates a new `QKView` with an empty `NSView`.
      */
     required public override convenience init() {
-        try! self.init(nsView: NSView())
+        try! self.init(nsView: NSViewOverride())
     }
     
     /// Adds a layer to the NSView.
@@ -62,10 +92,15 @@ public class QKView: NSObject, View {
         nsView.layer = layer
         return layer
     }
-}
+    
+    /// Adds callbacks to the `NSViewOverride`.
+    private func addOverrideCallbacks() {
+        nsView.layoutCallback = {
+            
+        }
+    }
 
-/* Positioning */
-extension QKView {
+    // MARK: - Positioning
     public var rect: Rect {
         get {
             return QKRect(cgRect: nsView.frame)
@@ -74,16 +109,16 @@ extension QKView {
             nsView.frame = newValue.cgRect
         }
     }
-}
-
-/* View hierarchy */
-extension QKView {
+    
+    // MARK: - View heiarchy
     public var subviews: [View] {
-        return nsView.subviews.map { try! QKView(nsView: $0) } // TODO: Safety
+        return nsView.subviews
+            .filter { $0 is NSViewOverride } // Filter to `NSViewOverride`
+            .map { try! QKView(nsView: $0 as! NSViewOverride) } // Map to `QKView`
     }
     
     public var superview: View? {
-        if let superview = nsView.superview {
+        if let superview = nsView.superview as? NSViewOverride {
             return try! QKView(nsView: superview) // TODO: Safety
         } else {
             return nil
@@ -91,8 +126,8 @@ extension QKView {
     }
     
     public func addSubview(_ view: View) {
-        if let view = view as? QKView {
-            nsView.addSubview(view.nsView)
+        if let view = view as? QKView, let nsView = view.nsView as? NSView {
+            nsView.addSubview(nsView)
         } else {
             // TODO: Handle error
             print("Invalid view type.")
@@ -102,15 +137,11 @@ extension QKView {
     public func removeFromSuperview() {
         nsView.removeFromSuperview()
     }
-}
-
-/* Layout */
-extension QKView {
     
-}
-
-/* Visibility */
-extension QKView {
+    // MARK: - Layout
+    public var layoutCallback: JSValue?
+    
+    // MARK: - Visibility
     public var hidden: Bool {
         get {
             return nsView.isHidden
@@ -119,10 +150,8 @@ extension QKView {
             nsView.isHidden = newValue
         }
     }
-}
-
-/* Style */
-extension QKView {
+    
+    // MARK: - Style
     public var backgroundColor: Color {
         get {
             if
