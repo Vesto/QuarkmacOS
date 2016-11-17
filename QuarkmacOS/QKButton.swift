@@ -7,8 +7,11 @@
 //
 
 import Cocoa
+import JavaScriptCore
 import QuarkExports
 import QuarkCore
+
+// TODO: Calling methods on sublcasses not working?
 
 @objc
 public class QKButton: QKView, Button {
@@ -27,14 +30,31 @@ public class QKButton: QKView, Button {
     
     init(nsButton button: NSButton) throws {
         try super.init(nsView: button)
+        
+        // Register the events
+        registerEvents()
     }
     
     convenience required public init() {
         try! self.init(nsButton: NSButton()) // TODO: Safety
     }
-}
-
-extension QKButton {
+    
+    public var testVar: Int {
+        return 5
+    }
+    
+    /// Registers the events for the `NSButton`.
+    private func registerEvents() {
+        nsButton.target = self
+        nsButton.action = #selector(onClick)
+    }
+    
+    // MARK: Events
+    @objc private func onClick(sender: NSButton) {
+        actionHandler?.call(withArguments: [self])
+    }
+    
+    // MARK: Impementation
     public var title: String {
         get {
             return nsButton.title
@@ -43,4 +63,6 @@ extension QKButton {
             nsButton.title = newValue
         }
     }
+    
+    public var actionHandler: JSValue?
 }

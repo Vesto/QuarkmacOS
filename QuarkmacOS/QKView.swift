@@ -62,10 +62,8 @@ public class QKView: NSObject, View {
         nsView.layer = layer
         return layer
     }
-}
-
-/* Positioning */
-extension QKView {
+    
+    // MARK: Positioning
     public var rect: Rect {
         get {
             return QKRect(cgRect: nsView.frame)
@@ -74,10 +72,8 @@ extension QKView {
             nsView.frame = newValue.cgRect
         }
     }
-}
-
-/* View hierarchy */
-extension QKView {
+    
+    // MARK: View heiarchy
     public var subviews: [View] {
         return nsView.subviews.map { try! QKView(nsView: $0) } // TODO: Safety
     }
@@ -102,15 +98,11 @@ extension QKView {
     public func removeFromSuperview() {
         nsView.removeFromSuperview()
     }
-}
-
-/* Layout */
-extension QKView {
     
-}
-
-/* Visibility */
-extension QKView {
+    // MARK: Layout
+    // TODO: Layout handler
+    
+    // MARK: Visibility
     public var hidden: Bool {
         get {
             return nsView.isHidden
@@ -119,10 +111,8 @@ extension QKView {
             nsView.isHidden = newValue
         }
     }
-}
-
-/* Style */
-extension QKView {
+    
+    // MARK: Style
     public var backgroundColor: Color {
         get {
             if
