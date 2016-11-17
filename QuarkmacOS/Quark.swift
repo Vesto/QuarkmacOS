@@ -22,6 +22,7 @@ public class Quark {
         "Point": QKPoint.self,
         "Size": QKSize.self,
         "Shadow": QKShadow.self,
+        "Color": QKColor.self,
         
         // Core
         "Logger": Logger.self

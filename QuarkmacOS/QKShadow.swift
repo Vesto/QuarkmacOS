@@ -13,10 +13,12 @@ import QuarkExports
 public class QKShadow: NSObject, Shadow {
     public var offset: Point
     public var blurRadius: Double
+    public var color: Color
     
-    public required init(offset: Point, blurRadius: Double) {
+    public required init(offset: Point, blurRadius: Double, color: Color) {
         self.offset = offset
         self.blurRadius = blurRadius
+        self.color = color
     }
 }
 
@@ -29,6 +31,7 @@ extension Shadow {
             height: offset.y.cgFloat
         )
         shadow.shadowBlurRadius = blurRadius.cgFloat
+        shadow.shadowColor = color.nsColor
         return shadow
     }
     
@@ -43,7 +46,8 @@ extension Shadow {
                 x: nsShadow.shadowOffset.width.double,
                 y: nsShadow.shadowOffset.height.double
             ),
-            blurRadius: nsShadow.shadowBlurRadius.double
+            blurRadius: nsShadow.shadowBlurRadius.double,
+            color: QKColor(nsColor: nsShadow.shadowColor ?? NSColor.black)
         )
     }
 }

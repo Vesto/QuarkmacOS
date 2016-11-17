@@ -20,7 +20,14 @@ import QuarkExports
 @objc
 public class QKView: NSObject, View {
     /// Returns the underlying `NSView` for the `QKView`
-    public var nsView: NSView
+    public private(set) var nsView: NSView
+    public var caLayer: CALayer {
+        if let layer = nsView.layer { // Return the existing layer
+            return layer
+        } else { // Add a new layer and return it
+            return addLayer()
+        }
+    }
     
     /**
      Creates a new `QKView` with an underlying `NSView`.
@@ -28,11 +35,28 @@ public class QKView: NSObject, View {
      - parameter nsView: The `NSView` that drives the `QKView`.
      */
     public init(nsView view: NSView) throws {
+        // Set the view
         nsView = view
+        
+        super.init()
+        
+        // Add a layer if needed
+        if view.layer == nil {
+            _ = addLayer()
+        }
     }
     
     required public override convenience init() {
-        try! self.init(nsView: NSView()) // TODO: Safety
+        try! self.init(nsView: NSView())
+    }
+    
+    /// Adds a layer to the NSView.
+    private func addLayer() -> CALayer {
+        // Creates a layer
+        let layer = CALayer()
+        nsView.wantsLayer = true
+        nsView.layer = layer
+        return layer
     }
 }
 
@@ -97,6 +121,21 @@ extension QKView {
 
 /* Style */
 extension QKView {
+    public var backgroundColor: Color {
+        get {
+            if
+                let cgColor = caLayer.backgroundColor,
+                let nsColor = NSColor(cgColor: cgColor)
+            { // Attempt to get background
+                return QKColor(nsColor: nsColor)
+            } else { // Could not get layer
+                return QKColor(nsColor: NSColor.clear)
+            }
+        }
+        set {
+            caLayer.backgroundColor = newValue.nsColor.cgColor
+        }
+    }
     public var alpha: Double {
         get {
             return nsView.alphaValue.double
