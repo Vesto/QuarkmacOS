@@ -8,6 +8,7 @@
 
 import Cocoa
 import QuarkExports
+import QuarkCore
 
 @objc
 public class QKButton: QKView, Button {

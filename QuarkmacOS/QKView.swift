@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import JavaScriptCore
 import QuarkExports
 
 /*
@@ -46,6 +47,9 @@ public class QKView: NSObject, View {
         }
     }
     
+    /**
+     Creates a new `QKView` with an empty `NSView`.
+     */
     required public override convenience init() {
         try! self.init(nsView: NSView())
     }
@@ -102,9 +106,7 @@ extension QKView {
 
 /* Layout */
 extension QKView {
-    public func layout() {
-        // TODO: This
-    }
+    
 }
 
 /* Visibility */

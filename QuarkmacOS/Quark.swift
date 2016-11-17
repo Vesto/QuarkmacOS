@@ -11,6 +11,9 @@ import JavaScriptCore
 import QuarkCore
 
 public class Quark {
+    /// The prefix for all the exports if classes
+    private let exportsPrefix = "QK"
+    
     /// A map of the classes to export to the `JSContext`
     private let exports: [String: Any] = [
         // UI
@@ -63,6 +66,9 @@ public class Quark {
         
         // Add the exports to the context
         addExports()
+        
+        // Import the Quark Library
+        try? importQuarkLibrary()
     }
     
     /**
@@ -88,7 +94,18 @@ public class Quark {
     private func addExports() {
         // Go through every export and expose it to the context
         for (key, object) in exports {
-            context.setObject(object, forKeyedSubscript: NSString(string: key))
+            context.setObject(object, forKeyedSubscript: NSString(string: exportsPrefix + key))
+        }
+    }
+    
+    /**
+     Imports the Quark Library to the context for use.
+    */
+    private func importQuarkLibrary() throws {
+        // Go through every JavaScript file and run it.
+        for fileURL in try QuarkLibrary.getLibraryFiles() {
+            let script = try String(contentsOf: fileURL)
+            context.evaluateScript(script)
         }
     }
 }
