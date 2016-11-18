@@ -18,55 +18,6 @@ import QuarkExports
  }
  */
 
-// TODO: Clean this pile of crap up
-// TODO: Make the default `layout` get called
-@objc
-public protocol NSViewDelegate {
-    @objc optional func layoutCalled()
-}
-
-private var layoutCallbackKey: UInt8 = 0
-public extension NSView {
-    private static var viewDelegateKey = "viewDelegateKey"
-    
-    var viewDelegate: NSViewDelegate? {
-        get {
-            return objc_getAssociatedObject(self, &NSView.viewDelegateKey) as? NSViewDelegate
-        }
-        set(newValue) {
-            objc_setAssociatedObject(self, &NSView.viewDelegateKey, newValue ?? nil, objc_AssociationPolicy.OBJC_ASSOCIATION_ASSIGN) // Create weak reference
-        }
-    }
-    
-    public class func swizzle() {
-        // Replace layout with my custom method
-        method_exchangeImplementations(
-            class_getInstanceMethod(NSView.self, #selector(defaultLayout)),
-            class_getInstanceMethod(NSView.self, #selector(layout))
-        )
-        method_exchangeImplementations(
-            class_getInstanceMethod(NSView.self, #selector(layoutProxy)),
-            class_getInstanceMethod(NSView.self, #selector(layout))
-        )
-        
-        Swift.print("Swizzled")
-    }
-    
-    func defaultLayout() {
-        // Will be replaced with `layout`
-    }
-    
-    func layoutProxy() {
-//        Swift.print("layout")
-        
-        // Call the default layout method
-        defaultLayout()
-        
-        // Call the callback
-        viewDelegate?.layoutCalled?()
-    }
-}
-
 @objc
 public class QKView: NSObject, View {
     /// Returns the underlying `NSView` for the `QKView`
@@ -81,7 +32,7 @@ public class QKView: NSObject, View {
     
     /**
      Creates a new `QKView` with an underlying `NSView`.
- 
+     
      - parameter nsView: The `NSView` that drives the `QKView`.
      */
     public init(nsView view: NSView) throws {
@@ -106,9 +57,21 @@ public class QKView: NSObject, View {
         try! self.init(nsView: NSView())
     }
     
+    deinit {
+        // Remove from `NotificationCenter`
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     /// Registers the events for the `NSView`.
     private func registerEvents() {
-        nsView.viewDelegate = self
+        // Register a notification listener for the frame change
+        nsView.postsFrameChangedNotifications = true
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(frameChanged),
+            name: Notification.Name.NSViewFrameDidChange,
+            object: nil
+        )
     }
     
     /// Adds a layer to the NSView.
@@ -118,6 +81,17 @@ public class QKView: NSObject, View {
         nsView.wantsLayer = true
         nsView.layer = layer
         return layer
+    }
+    
+    /// Listens for frame changes on the view.
+    @objc private func frameChanged(notification: Notification) {
+        // Test if the associated view is this view (use `equal()` because
+        // it's more efficient than optionally casing to `NSView` then checking
+        // equality)
+        if nsView.isEqual(notification.object) {
+            // Tell the layout handler to layout
+            frameChangedHandler?.call(withArguments: [self])
+        }
     }
     
     // MARK: Positioning
@@ -157,7 +131,7 @@ public class QKView: NSObject, View {
     }
     
     // MARK: Layout
-    public var layoutHandler: JSValue?
+    public var frameChangedHandler: JSValue?
     
     // MARK: Visibility
     public var hidden: Bool {
@@ -212,10 +186,3 @@ public class QKView: NSObject, View {
         }
     }
 }
-
-extension QKView: NSViewDelegate {
-    public func layoutCalled() {
-        layoutHandler?.call(withArguments: [self])
-    }
-}
-
