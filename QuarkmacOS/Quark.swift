@@ -102,10 +102,8 @@ public class Quark {
      Imports the Quark Library to the context for use.
     */
     private func importQuarkLibrary() throws {
-        // Go through every JavaScript file and run it.
-        for fileURL in try QuarkLibrary.getLibraryFiles() {
-            let script = try String(contentsOf: fileURL)
-            context.evaluateScript(script)
-        }
+        // Run the built library
+        let script = try String(contentsOf: try QuarkLibrary.getLibrary())
+        context.evaluateScript(script)
     }
 }
