@@ -30,6 +30,13 @@ public class QKView: NSObject, View {
         }
     }
     
+    private var _jsView: JSValue?
+    public var jsView: JSValue? {
+        if let jsView = _jsView {
+            return jsView
+        } else if let jsView = self.makeJSView(context: contex)
+    }
+    
     /**
      Creates a new `QKView` with an underlying `NSView`.
      
@@ -55,6 +62,14 @@ public class QKView: NSObject, View {
      */
     required public override convenience init() {
         try! self.init(nsView: NSView())
+    }
+    
+    /**
+     Creates a new `QKView` with a given JavaScript view.
+     */
+    required public convenience init(jsView: JSValue) {
+        self.init()
+        self.jsView = jsView
     }
     
     deinit {
