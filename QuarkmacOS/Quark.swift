@@ -11,6 +11,7 @@ import JavaScriptCore
 import QuarkCore
 
 public class Quark {
+    // TEMP: Static context for quick use, need to remove
     static var context: JSContext!
     
     /// The prefix for all the exports if classes
