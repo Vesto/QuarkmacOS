@@ -9,14 +9,9 @@
 /* Begin PBXBuildFile section */
 		BF0088DB1DB806BE002CBA91 /* CGFloat+Magic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DA1DB806BE002CBA91 /* CGFloat+Magic.swift */; };
 		BF0088DD1DB806DD002CBA91 /* Double+Magic.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DC1DB806DD002CBA91 /* Double+Magic.swift */; };
-		BF0088DF1DB8075B002CBA91 /* QKShadow.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0088DE1DB8075B002CBA91 /* QKShadow.swift */; };
 		BF1512BB1DAEF8C800C39871 /* QuarkmacOS.h in Headers */ = {isa = PBXBuildFile; fileRef = BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF1512C11DAEF8E100C39871 /* Quark.swift */; };
 		BF15130D1DAEFAFB00C39871 /* QKButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15130C1DAEFAFB00C39871 /* QKButton.swift */; };
-		BF15133B1DAF3C4500C39871 /* QKRect.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15133A1DAF3C4500C39871 /* QKRect.swift */; };
-		BF15133D1DAF3C6D00C39871 /* QKPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15133C1DAF3C6D00C39871 /* QKPoint.swift */; };
-		BF15133F1DAF3C7500C39871 /* QKSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15133E1DAF3C7500C39871 /* QKSize.swift */; };
-		BF23092A1DDBEE00005624D0 /* QKColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF2309291DDBEE00005624D0 /* QKColor.swift */; };
 		BF462F2E1DAFF6C80037C7F0 /* QKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF462F2D1DAFF6C80037C7F0 /* QKView.swift */; };
 		BF7C36D61DDD365600C1DB00 /* QuarkCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7C36D41DDD365600C1DB00 /* QuarkCore.framework */; };
 		BF7C36D71DDD365600C1DB00 /* QuarkExports.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7C36D51DDD365600C1DB00 /* QuarkExports.framework */; };
@@ -25,16 +20,11 @@
 /* Begin PBXFileReference section */
 		BF0088DA1DB806BE002CBA91 /* CGFloat+Magic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Magic.swift"; sourceTree = "<group>"; };
 		BF0088DC1DB806DD002CBA91 /* Double+Magic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Double+Magic.swift"; sourceTree = "<group>"; };
-		BF0088DE1DB8075B002CBA91 /* QKShadow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKShadow.swift; sourceTree = "<group>"; };
 		BF1512B61DAEF8C800C39871 /* QuarkmacOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = QuarkmacOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF1512B91DAEF8C800C39871 /* QuarkmacOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QuarkmacOS.h; sourceTree = "<group>"; };
 		BF1512BA1DAEF8C800C39871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF1512C11DAEF8E100C39871 /* Quark.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quark.swift; sourceTree = "<group>"; };
 		BF15130C1DAEFAFB00C39871 /* QKButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKButton.swift; sourceTree = "<group>"; };
-		BF15133A1DAF3C4500C39871 /* QKRect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKRect.swift; sourceTree = "<group>"; };
-		BF15133C1DAF3C6D00C39871 /* QKPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKPoint.swift; sourceTree = "<group>"; };
-		BF15133E1DAF3C7500C39871 /* QKSize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKSize.swift; sourceTree = "<group>"; };
-		BF2309291DDBEE00005624D0 /* QKColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKColor.swift; sourceTree = "<group>"; };
 		BF462F2D1DAFF6C80037C7F0 /* QKView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKView.swift; sourceTree = "<group>"; };
 		BF7C36D41DDD365600C1DB00 /* QuarkCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuarkCore.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/Vesto-eepuggcvvroncbgxsofxolsjjwlx/Build/Products/Debug/QuarkCore.framework"; sourceTree = "<group>"; };
 		BF7C36D51DDD365600C1DB00 /* QuarkExports.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuarkExports.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/Vesto-eepuggcvvroncbgxsofxolsjjwlx/Build/Products/Debug/QuarkExports.framework"; sourceTree = "<group>"; };
@@ -104,11 +94,6 @@
 		BF1513391DAF3C3600C39871 /* Data Types */ = {
 			isa = PBXGroup;
 			children = (
-				BF15133A1DAF3C4500C39871 /* QKRect.swift */,
-				BF15133C1DAF3C6D00C39871 /* QKPoint.swift */,
-				BF15133E1DAF3C7500C39871 /* QKSize.swift */,
-				BF0088DE1DB8075B002CBA91 /* QKShadow.swift */,
-				BF2309291DDBEE00005624D0 /* QKColor.swift */,
 			);
 			name = "Data Types";
 			sourceTree = "<group>";
@@ -203,15 +188,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF0088DB1DB806BE002CBA91 /* CGFloat+Magic.swift in Sources */,
-				BF15133B1DAF3C4500C39871 /* QKRect.swift in Sources */,
-				BF15133D1DAF3C6D00C39871 /* QKPoint.swift in Sources */,
 				BF462F2E1DAFF6C80037C7F0 /* QKView.swift in Sources */,
-				BF23092A1DDBEE00005624D0 /* QKColor.swift in Sources */,
-				BF0088DF1DB8075B002CBA91 /* QKShadow.swift in Sources */,
 				BF0088DD1DB806DD002CBA91 /* Double+Magic.swift in Sources */,
 				BF15130D1DAEFAFB00C39871 /* QKButton.swift in Sources */,
 				BF1512C21DAEF8E100C39871 /* Quark.swift in Sources */,
-				BF15133F1DAF3C7500C39871 /* QKSize.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

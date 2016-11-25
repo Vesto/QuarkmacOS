@@ -11,21 +11,16 @@ import JavaScriptCore
 import QuarkCore
 
 public class Quark {
+    static var context: JSContext!
+    
     /// The prefix for all the exports if classes
     private let exportsPrefix = "QK"
     
     /// A map of the classes to export to the `JSContext`
     private let exports: [String: Any] = [
         // UI
-        "View": QKView.self,
-        "Button": QKButton.self,
-        
-        // Data types
-        "Rect": QKRect.self,
-        "Point": QKPoint.self,
-        "Size": QKSize.self,
-        "Shadow": QKShadow.self,
-        "Color": QKColor.self,
+        "View": NSView.self,
+        "Button": NSButton.self,
         
         // Core
         "Logger": Logger.self
@@ -60,6 +55,9 @@ public class Quark {
         } else {
             context = JSContext()
         }
+        
+        // TEMP: Sets the context
+        Quark.context = context
         
         // Save the script
         self.script = script
