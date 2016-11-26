@@ -17,27 +17,11 @@ import QuarkExports
     - Make ArrayAdapter<JSView> { index: Int in return view.subviews[index].jsView }
     - Then when JavaSript wants to subscript it, do view.subviews.atIndex(0)
     - Or get the whole thing by view.subviews.all() (goes through every item and converts it)
- - Add parameter callsMethods to determine if the NSView should call the native methods (e.g. if there is a subclass that it should be, otherwise just don't call it at all, default to false) 
+ - Add parameter callsMethods to determine if the NSView should call the native methods (e.g. if there is a subclass that it should be, otherwise just don't call it at all, default to false)
+ - Maybe find a way to determine if there should be a designated JSValue stored on the NSView
+    - Maybe just have JavaScript assign the jsView themselves so the subclasses cand do it
+    - Or do it in the View constructor if the QKView is nil and it creates it
  */
-
-extension NSObject {
-    static func hookTo(original originalSelector: Selector, swizzled swizzledSelector: Selector) {
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-        
-        let didAddMethod = class_addMethod(
-            self, originalSelector,
-            method_getImplementation(swizzledMethod),
-            method_getTypeEncoding(swizzledMethod)
-        )
-        
-        if didAddMethod {
-            class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
-        } else {
-            method_exchangeImplementations(originalMethod, swizzledMethod)
-        }
-    }
-}
 
 extension NSView {
     fileprivate struct AssociatedKeys {
@@ -45,25 +29,7 @@ extension NSView {
         static var HasInitialized = "HasInitialized"
     }
     
-    public static func swizzle() { // http://nshipster.com/swift-objc-runtime/
-//        let originalSelector = Selector("viewWillMoveToWindow:")
-//        let swizzledSelector = Selector("qk_viewWillMoveToWindow:")
-//        
-//        let originalMethod = class_getInstanceMethod(self, originalSelector)
-//        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-//        
-//        let didAddMethod = class_addMethod(
-//            self, originalSelector,
-//            method_getImplementation(swizzledMethod),
-//            method_getTypeEncoding(swizzledMethod)
-//        )
-//        
-//        if didAddMethod {
-//            class_replaceMethod(self, swizzledSelector, method_getImplementation(originalMethod), method_getTypeEncoding(originalMethod))
-//        } else {
-//            method_exchangeImplementations(originalMethod, swizzledMethod)
-//        }
-        
+    public static func swizzle() {
         hookTo(original: Selector("viewWillMoveToWindow:"), swizzled: Selector("qk_viewWillMoveToWindow:"))
         hookTo(original: Selector("layout"), swizzled: Selector("qk_layout"))
     }
@@ -77,6 +43,7 @@ extension NSView {
     func qk_layout() {
         self.qk_layout()
         
+        jsView?.invokeMethod("layout", withArguments: [])
     }
     
     private var hasInitialized: Bool {
@@ -102,7 +69,7 @@ extension NSView {
         // Set initiated
         hasInitialized = true
         
-        Swift.print("Initialize \(self).")
+        
     }
 }
 
