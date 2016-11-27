@@ -40,13 +40,13 @@ extension NSView {
         qk_init()
     }
     
-    func qk_layout() {
+    internal func qk_layout() {
         self.qk_layout()
         
         jsView?.invokeMethod("layout", withArguments: [])
     }
     
-    private var hasInitialized: Bool {
+    internal private(set) var hasInitialized: Bool {
         get {
             return objc_getAssociatedObject(self, &AssociatedKeys.HasInitialized) as? Bool ?? false
         }
@@ -60,7 +60,7 @@ extension NSView {
         }
     }
     
-    private func qk_init() {
+    internal func qk_init() {
         // Assure it has not initiated yet
         guard !hasInitialized else {
             return
@@ -68,8 +68,6 @@ extension NSView {
         
         // Set initiated
         hasInitialized = true
-        
-        
     }
 }
 
@@ -94,7 +92,7 @@ extension NSView: View {
     /* Positioning */
     public var jsRect: JSValue {
         get {
-            guard let rect = JSRect(context: Quark.context, cgRect: frame)?.value else {
+            guard let rect = JSRect(context: QuarkViewController.context, cgRect: frame)?.value else {
                 print("Unable to convert CGRect.")
                 return JSValue()
             }
@@ -113,13 +111,13 @@ extension NSView: View {
     public var jsSubviews: [JSValue] {
         get {
             return subviews
-                .map { $0.readOrCreateJSView(context: Quark.context) }
+                .map { $0.readOrCreateJSView(context: QuarkViewController.context) }
                 .filter { $0 != nil }.map { $0! } // Filter out the nil values
         }
     }
     
     public var jsSuperview: JSValue? {
-        return superview?.readOrCreateJSView(context: Quark.context)
+        return superview?.readOrCreateJSView(context: QuarkViewController.context)
     }
     
     public func jsAddSubview(_ view: JSValue) {
@@ -153,7 +151,7 @@ extension NSView: View {
             } else {
                 color = NSColor.clear
             }
-            return JSColor(context: Quark.context, nsColor: color)?.value ?? JSValue()
+            return JSColor(context: QuarkViewController.context, nsColor: color)?.value ?? JSValue()
         }
         set {
             assuredLayer.backgroundColor = JSColor(value: newValue)?.nsColor.cgColor
@@ -171,7 +169,7 @@ extension NSView: View {
         get {
             guard
                 let nsShadow = self.shadow,
-                let shadow = JSShadow(context: Quark.context, nsShadow: nsShadow)
+                let shadow = JSShadow(context: QuarkViewController.context, nsShadow: nsShadow)
             else {
                     print("Could not get shadow.")
                     return JSValue()

@@ -1,5 +1,5 @@
 //
-//  Quark.swift
+//  QuarkViewController.swift
 //  QuarkmacOS
 //
 //  Created by Nathan Flurry on 10/12/16.
@@ -9,8 +9,9 @@
 import Cocoa
 import JavaScriptCore
 import QuarkCore
+import QuarkExports
 
-public class Quark {
+public class QuarkViewController: NSViewController {
     // TEMP: Static context for quick use, need to remove
     static var context: JSContext!
     
@@ -27,9 +28,6 @@ public class Quark {
         "Logger": Logger.self
     ]
     
-    /// The window to present Quark in
-    public let window: NSWindow
-    
     /// The context in which the main script runs in
     public let context: JSContext
     
@@ -39,6 +37,7 @@ public class Quark {
     /// Wether or not Quark is running
     public private(set) var running: Bool = false
     
+    // MARK: Initiators
     /**
      Creates a new Quark instance and starts it.
      
@@ -47,9 +46,6 @@ public class Quark {
      provided.
      */
     public init(script: String, virtualMachine: JSVirtualMachine? = nil) {
-        // Create the window
-        window = NSWindow()
-        
         // Create the context
         if let virtualMachine = virtualMachine {
             context = JSContext(virtualMachine: virtualMachine)
@@ -58,29 +54,57 @@ public class Quark {
         }
         
         // TEMP: Sets the context
-        Quark.context = context
+        QuarkViewController.context = context
         
         // Save the script
         self.script = script
+        
+        super.init(nibName: nil, bundle: nil)!
+    }
+    
+    required public init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: Lifecycle
+    public override func loadView() {
+//        super.loadView()
+        
+        view = NSView()
+    }
+    
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        // Swizzle classes // TODO: Check if they've been swizzled already
+        NSView.swizzle()
         
         // Add the exports to the context
         addExports()
         
         // Import the Quark Library
-        try? importQuarkLibrary()
+        do {
+            try importQuarkLibrary()
+        } catch {
+            print("Could not import Quark library. \(error)")
+        }
+        
+        // Set the context
+        setContext()
+        
+        // Start quark
+        start()
     }
     
+    // MARK: Methods
     /**
      Starts the Quark instance, concequently showing the window and
      executing the script.
      */
-    public func start() {
+    private func start() {
         if !running {
             // Save the running state
             running = true
-            
-            // Show the window // TODO: Use NSWindowController and pass it here
-            window.makeKeyAndOrderFront(nil)
             
             // Evaluates the script
             context.evaluateScript(script)
@@ -104,5 +128,15 @@ public class Quark {
         // Run the built library
         let script = try String(contentsOf: try QuarkLibrary.getLibrary())
         context.evaluateScript(script)
+    }
+    
+    /**
+     Sets the appropriate parameters so documents can work in this view controller's
+     context.
+    */
+    private func setContext() {
+        // Set the parent view so it can manipulate objects // TODO: Safety
+        context.setObject(JSView(context: context, view: view)!.value, forKeyedSubscript: NSString(string: "parentView"))
+        print(context.objectForKeyedSubscript("parentView"))
     }
 }

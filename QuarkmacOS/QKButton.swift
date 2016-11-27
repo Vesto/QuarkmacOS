@@ -29,6 +29,14 @@ extension NSButton: Button {
             
         }
     }
-    
-    
+}
+
+extension NSButton {
+    override func qk_init() {
+        super.qk_init()
+        
+        // Set the button style
+//        bezelStyle = NSBezelStyle.rounded
+        bezelStyle = NSBezelStyle.regularSquare
+    }
 }
