@@ -11,6 +11,7 @@ import JavaScriptCore
 import QuarkExports
 import QuarkCore
 
+// TODO: Parse sourcemaps for original source location https://github.com/mozilla/source-map
 public class QuarkViewController: NSViewController {
     // TEMP: Static context for quick use, need to remove
     static var context: JSContext!
@@ -33,6 +34,9 @@ public class QuarkViewController: NSViewController {
     
     /// The module that this Quark instance is based on.
     public let module: QKModule
+    
+    /// The app delegate.
+    public var appDelegate: JSValue?
     
     /// The context in which the main script runs in
     public let context: JSContext
@@ -65,7 +69,7 @@ public class QuarkViewController: NSViewController {
         // Load the module
         self.module = try QKModule(url: moduleURL)
         
-        super.init(nibName: nil, bundle: nil)! // TODO: Safety
+        super.init(nibName: nil, bundle: nil)!
     }
     
     required public init?(coder: NSCoder) {
@@ -102,6 +106,13 @@ public class QuarkViewController: NSViewController {
             print("Could not import module. \(error)")
         }
         
+        // Creates an app delegate
+        guard let appDelegateName = module.info?.appDelegate else {
+            print("Could not get app delegate.")
+            return
+        }
+        appDelegate = context.objectForKeyedSubscript(appDelegateName).construct(withArguments: [])
+        
         // Start quark
         start()
     }
@@ -116,17 +127,13 @@ public class QuarkViewController: NSViewController {
             // Save the running state
             running = true
             
-            // Call the appropriate method on the app delegate // TODO: Safety // TODO: Use JSview
+            // Call the appropriate method on the app delegate
             guard let parentView = JSView(context: context, view: view)?.value else {
                 print("Could not get parent view.")
                 return
             }
-            guard let appDelegate = module.info?.appDelegate else {
-                print("Could not get app delegate.")
-                return
-            }
             // TODO: Construct and save app delegate
-            context.objectForKeyedSubscript(appDelegate).construct(withArguments: []).invokeMethod("begin", withArguments: [parentView])
+            appDelegate?.invokeMethod("begin", withArguments: [parentView])
         }
     }
     

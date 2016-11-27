@@ -12,21 +12,12 @@ import QuarkExports
 import QuarkCore
 
 extension NSButton: Button {
-    public var jsTitle: String { // TODO: Implement
+    public var jsTitle: String {
         get {
             return title
         }
         set(newValue) {
             title = newValue
-        }
-    }
-
-    public var actionHandler: JSValue? { // TODO: Implement. Weak? (need to call instead)
-        get {
-            return nil
-        }
-        set {
-            
         }
     }
 }
