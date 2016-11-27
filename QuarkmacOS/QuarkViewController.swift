@@ -32,7 +32,7 @@ public class QuarkViewController: NSViewController {
     public let moduleURL: URL
     
     /// The module that this Quark instance is based on.
-    public let module: QuarkModule
+    public let module: QKModule
     
     /// The context in which the main script runs in
     public let context: JSContext
@@ -63,7 +63,7 @@ public class QuarkViewController: NSViewController {
         self.moduleURL = moduleURL
         
         // Load the module
-        self.module = try QuarkModule(url: moduleURL)
+        self.module = try QKModule(url: moduleURL)
         
         super.init(nibName: nil, bundle: nil)! // TODO: Safety
     }
