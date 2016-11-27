@@ -8,8 +8,8 @@
 
 import Cocoa
 import JavaScriptCore
-import QuarkCore
 import QuarkExports
+import QuarkCore
 
 public class QuarkViewController: NSViewController {
     // TEMP: Static context for quick use, need to remove
@@ -28,11 +28,14 @@ public class QuarkViewController: NSViewController {
         "Logger": Logger.self
     ]
     
+    /// The URL at which the module is located.
+    public let moduleURL: URL
+    
+    /// The module that this Quark instance is based on.
+    public let module: QuarkModule
+    
     /// The context in which the main script runs in
     public let context: JSContext
-    
-    /// The script to be executed when `start` called
-    public let script: String
     
     /// Wether or not Quark is running
     public private(set) var running: Bool = false
@@ -45,7 +48,7 @@ public class QuarkViewController: NSViewController {
      - parameter virtualMachine: An optional virtual machine that can be
      provided.
      */
-    public init(script: String, virtualMachine: JSVirtualMachine? = nil) {
+    public init(moduleURL: URL, virtualMachine: JSVirtualMachine? = nil) throws {
         // Create the context
         if let virtualMachine = virtualMachine {
             context = JSContext(virtualMachine: virtualMachine)
@@ -56,10 +59,13 @@ public class QuarkViewController: NSViewController {
         // TEMP: Sets the context
         QuarkViewController.context = context
         
-        // Save the script
-        self.script = script
+        // Save the URL
+        self.moduleURL = moduleURL
         
-        super.init(nibName: nil, bundle: nil)!
+        // Load the module
+        self.module = try QuarkModule(url: moduleURL)
+        
+        super.init(nibName: nil, bundle: nil)! // TODO: Safety
     }
     
     required public init?(coder: NSCoder) {
@@ -68,7 +74,7 @@ public class QuarkViewController: NSViewController {
     
     // MARK: Lifecycle
     public override func loadView() {
-//        super.loadView()
+        // Don't call super.loadView() because it will try and load the XIB
         
         view = NSView()
     }
@@ -89,8 +95,12 @@ public class QuarkViewController: NSViewController {
             print("Could not import Quark library. \(error)")
         }
         
-        // Set the context
-        setContext()
+        // Inject the program into the context
+        do {
+            try module.import(intoContext: context)
+        } catch {
+            print("Could not import module. \(error)")
+        }
         
         // Start quark
         start()
@@ -106,8 +116,17 @@ public class QuarkViewController: NSViewController {
             // Save the running state
             running = true
             
-            // Evaluates the script
-            context.evaluateScript(script)
+            // Call the appropriate method on the app delegate // TODO: Safety // TODO: Use JSview
+            guard let parentView = JSView(context: context, view: view)?.value else {
+                print("Could not get parent view.")
+                return
+            }
+            guard let appDelegate = module.info?.appDelegate else {
+                print("Could not get app delegate.")
+                return
+            }
+            // TODO: Construct and save app delegate
+            context.objectForKeyedSubscript(appDelegate).construct(withArguments: []).invokeMethod("begin", withArguments: [parentView])
         }
     }
     
@@ -128,15 +147,5 @@ public class QuarkViewController: NSViewController {
         // Run the built library
         let script = try String(contentsOf: try QuarkLibrary.getLibrary())
         context.evaluateScript(script)
-    }
-    
-    /**
-     Sets the appropriate parameters so documents can work in this view controller's
-     context.
-    */
-    private func setContext() {
-        // Set the parent view so it can manipulate objects // TODO: Safety
-        context.setObject(JSView(context: context, view: view)!.value, forKeyedSubscript: NSString(string: "parentView"))
-        print(context.objectForKeyedSubscript("parentView"))
     }
 }
