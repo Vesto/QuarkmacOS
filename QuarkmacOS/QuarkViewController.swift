@@ -8,7 +8,6 @@
 
 import Cocoa
 import JavaScriptCore
-import QuarkExports
 import QuarkCore
 
 // TODO: Parse sourcemaps for original source location https://github.com/mozilla/source-map

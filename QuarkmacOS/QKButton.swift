@@ -7,8 +7,6 @@
 //
 
 import Cocoa
-import JavaScriptCore
-import QuarkExports
 import QuarkCore
 
 extension NSButton: Button {

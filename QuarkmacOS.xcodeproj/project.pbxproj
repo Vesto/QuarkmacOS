@@ -14,7 +14,6 @@
 		BF15130D1DAEFAFB00C39871 /* QKButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF15130C1DAEFAFB00C39871 /* QKButton.swift */; };
 		BF462F2E1DAFF6C80037C7F0 /* QKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF462F2D1DAFF6C80037C7F0 /* QKView.swift */; };
 		BF7C36D61DDD365600C1DB00 /* QuarkCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7C36D41DDD365600C1DB00 /* QuarkCore.framework */; };
-		BF7C36D71DDD365600C1DB00 /* QuarkExports.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF7C36D51DDD365600C1DB00 /* QuarkExports.framework */; };
 		BFF124EA1DE838530023661D /* JSAdapter+Cocoa.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF124E91DE838530023661D /* JSAdapter+Cocoa.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,7 +37,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF7C36D61DDD365600C1DB00 /* QuarkCore.framework in Frameworks */,
-				BF7C36D71DDD365600C1DB00 /* QuarkExports.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,7 +7,7 @@
 //
 
 import JavaScriptCore
-import QuarkExports
+import QuarkCore
 
 extension JSRect {
     var cgRect: CGRect {

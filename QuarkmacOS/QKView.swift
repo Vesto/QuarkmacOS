@@ -8,7 +8,7 @@
 
 import Cocoa
 import JavaScriptCore
-import QuarkExports
+import QuarkCore
 
 /*
  - For arrays, need an adapter so it doesn't generate an entire array every time you index it
