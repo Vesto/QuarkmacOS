@@ -91,13 +91,6 @@ public class QuarkViewController: NSViewController {
         // Add the exports to the context
         addExports()
         
-        // Import the Quark Library
-        do {
-            try importQuarkLibrary()
-        } catch {
-            print("Could not import Quark library. \(error)")
-        }
-        
         // Inject the program into the context
         do {
             try module.import(intoContext: context)
@@ -106,11 +99,7 @@ public class QuarkViewController: NSViewController {
         }
         
         // Creates an app delegate
-        guard let appDelegateName = module.info?.appDelegate else {
-            print("Could not get app delegate.")
-            return
-        }
-        appDelegate = context.objectForKeyedSubscript(appDelegateName).construct(withArguments: [])
+        appDelegate = context.objectForKeyedSubscript(module.info.delegate).construct(withArguments: [])
         
         // Start quark
         start()
@@ -144,14 +133,5 @@ public class QuarkViewController: NSViewController {
         for (key, object) in exports {
             context.setObject(object, forKeyedSubscript: NSString(string: exportsPrefix + key))
         }
-    }
-    
-    /**
-     Imports the Quark Library to the context for use.
-    */
-    private func importQuarkLibrary() throws {
-        // Run the built library
-        let script = try String(contentsOf: try QuarkLibrary.getLibrary())
-        context.evaluateScript(script)
     }
 }
