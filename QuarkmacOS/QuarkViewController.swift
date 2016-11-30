@@ -112,6 +112,10 @@ public class QuarkViewController: NSViewController {
      */
     private func start() {
         if !running {
+            let v = NSView()
+            view.addSubview(v)
+            print("VC \(v.quarkContext)")
+            
             // Save the running state
             running = true
             

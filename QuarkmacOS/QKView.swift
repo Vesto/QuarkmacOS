@@ -24,6 +24,19 @@ import QuarkCore
  */
 
 extension NSView {
+    public var quarkContext: QuarkViewController? {
+        var responder: NSResponder? = self
+        while responder != nil {
+            if let quark = responder as? QuarkViewController {
+                return quark
+            }
+            responder = responder?.nextResponder
+        }
+        return nil
+    }
+}
+
+extension NSView {
     fileprivate struct AssociatedKeys {
         static var JSViewName = "JSViewName"
         static var HasInitialized = "HasInitialized"
