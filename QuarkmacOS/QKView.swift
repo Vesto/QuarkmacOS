@@ -34,6 +34,10 @@ extension NSView {
         }
         return nil
     }
+    
+    public var instance: QKInstance? {
+        return quarkContext?.instance
+    }
 }
 
 extension NSView {
@@ -88,24 +92,20 @@ extension NSView: View {
     /* JavaScript Interop */
     public var jsView: JSValue? {
         get {
-            return objc_getAssociatedObject(self, &AssociatedKeys.JSViewName) as? JSValue
+            return jsValue
         }
         set {
-            if let newValue = newValue {
-                objc_setAssociatedObject(
-                    self,
-                    &AssociatedKeys.JSViewName,
-                    newValue,
-                    .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-                )
-            }
+            jsValue = newValue
         }
     }
     
     /* Positioning */
     public var jsRect: JSValue {
         get {
-            guard let rect = JSRect(context: QuarkViewController.context, cgRect: frame)?.value else {
+            guard
+                let instance = instance,
+                let rect = JSRect(instance: instance, cgRect: frame)?.value
+            else {
                 print("Unable to convert CGRect.")
                 return JSValue()
             }
@@ -123,19 +123,27 @@ extension NSView: View {
     /* View hierarchy */
     public var jsSubviews: [JSValue] {
         get {
-            return subviews
-                .map { $0.readOrCreateJSView(context: QuarkViewController.context) }
-                .filter { $0 != nil }.map { $0! } // Filter out the nil values
+            guard let instance = instance else {
+                print("Cannot get instance for jsSubview.")
+                return []
+            }
+            
+            return subviews.map { $0.readOrCreateJSValue(instance: instance) }
         }
     }
     
     public var jsSuperview: JSValue? {
-        return superview?.readOrCreateJSView(context: QuarkViewController.context)
+        guard let instance = instance else {
+            print("Cannot get instance for jsSuperview.")
+            return nil
+        }
+        
+        return superview?.readOrCreateJSValue(instance: instance)
     }
     
     public func jsAddSubview(_ view: JSValue) {
         guard let nsView = JSView(value: view)?.nsView else {
-            Swift.print("Could not get NSView for adding subview. \(JSView(value: view))")
+            Swift.print("Could not get NSView for adding subview. \(view)")
             return
         }
         addSubview(nsView)
@@ -158,13 +166,18 @@ extension NSView: View {
     /* Style */
     public var jsBackgroundColor: JSValue {
         get {
+            guard let instance = instance else {
+                print("Could not get instance for background color.")
+                return JSValue()
+            }
+            
             let color: NSColor
             if let cgColor = assuredLayer.backgroundColor, let nsColor = NSColor(cgColor: cgColor) {
                 color = nsColor
             } else {
                 color = NSColor.clear
             }
-            return JSColor(context: QuarkViewController.context, nsColor: color)?.value ?? JSValue()
+            return JSColor(instance: instance, nsColor: color)?.value ?? JSValue()
         }
         set {
             assuredLayer.backgroundColor = JSColor(value: newValue)?.nsColor.cgColor
@@ -181,8 +194,9 @@ extension NSView: View {
     public var jsShadow: JSValue {
         get {
             guard
+                let instance = instance,
                 let nsShadow = self.shadow,
-                let shadow = JSShadow(context: QuarkViewController.context, nsShadow: nsShadow)
+                let shadow = JSShadow(instance: instance, nsShadow: nsShadow)
             else {
                     print("Could not get shadow.")
                     return JSValue()
@@ -208,6 +222,13 @@ extension NSView: View {
     /// Creates a new view with a JSView.
     public convenience init(jsView: JSValue) {
         self.init()
+    }
+}
+
+extension NSView {
+    // This is here because `createJSValue` cannot be overriden on a protocol for some reason.
+    public static func createJSValue(instance: QKInstance) -> JSValue? {
+        return NSView.createJSView(instance: instance)?.value
     }
 }
 

@@ -19,16 +19,16 @@ extension JSRect {
         return CGRect(origin: point.cgPoint, size: size.cgSize)
     }
     
-    convenience init?(context: JSContext, cgRect: CGRect) {
+    convenience init?(instance: QKInstance, cgRect: CGRect) {
         // Get the point and size
         guard
-            let point = JSPoint(context: context, cgPoint: cgRect.origin),
-            let size = JSSize(context: context, cgSize: cgRect.size)
+            let point = JSPoint(instance: instance, cgPoint: cgRect.origin),
+            let size = JSSize(instance: instance, cgSize: cgRect.size)
             else {
                 return nil
         }
         
-        self.init(context: context, point: point, size: size)
+        self.init(instance: instance, point: point, size: size)
     }
 }
 
@@ -37,8 +37,8 @@ extension JSPoint {
         return CGPoint(x: x, y: y)
     }
     
-    convenience init?(context: JSContext, cgPoint: CGPoint) {
-        self.init(context: context, x: cgPoint.x.double, y: cgPoint.y.double)
+    convenience init?(instance: QKInstance, cgPoint: CGPoint) {
+        self.init(instance: instance, x: cgPoint.x.double, y: cgPoint.y.double)
     }
 }
 
@@ -47,8 +47,8 @@ extension JSSize {
         return CGSize(width: width, height: height)
     }
     
-    convenience init?(context: JSContext, cgSize: CGSize) {
-        self.init(context: context, width: cgSize.width.double, height: cgSize.height.double)
+    convenience init?(instance: QKInstance, cgSize: CGSize) {
+        self.init(instance: instance, width: cgSize.width.double, height: cgSize.height.double)
     }
 }
 
@@ -57,10 +57,10 @@ extension JSColor {
         return NSColor(red: red.cgFloat, green: green.cgFloat, blue: blue.cgFloat, alpha: alpha.cgFloat)
     }
     
-    convenience init?(context: JSContext, nsColor: NSColor) {
+    convenience init?(instance: QKInstance, nsColor: NSColor) {
         let color = nsColor.usingColorSpaceName(NSCalibratedRGBColorSpace)!
         self.init(
-            context: context,
+            instance: instance,
             red: color.redComponent.double,
             green: color.greenComponent.double,
             blue: color.blueComponent.double,
@@ -79,19 +79,19 @@ extension JSShadow {
         return shadow
     }
     
-    convenience init?(context: JSContext, nsShadow: NSShadow) {
+    convenience init?(instance: QKInstance, nsShadow: NSShadow) {
         guard
             let point = JSPoint(
-                context: context,
+                instance: instance,
                 cgPoint: CGPoint(x: nsShadow.shadowOffset.width, y: nsShadow.shadowOffset.height)
             ),
             let shadowColor = nsShadow.shadowColor,
-            let color = JSColor(context: context, nsColor: shadowColor)
+            let color = JSColor(instance: instance, nsColor: shadowColor)
             else {
                 return nil
         }
         self.init(
-            context: context,
+            instance: instance,
             offset: point,
             blurRadius: nsShadow.shadowBlurRadius.double,
             color: color

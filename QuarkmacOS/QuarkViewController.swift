@@ -10,16 +10,9 @@ import Cocoa
 import JavaScriptCore
 import QuarkCore
 
-// TODO: Parse sourcemaps for original source location https://github.com/mozilla/source-map
-public class QuarkViewController: NSViewController {
-    // TEMP: Static context for quick use, need to remove
-    static var context: JSContext!
-    
-    /// The prefix for all the exports if classes
-    private let exportsPrefix = "QK"
-    
+public class QuarkViewController: NSViewController, Window {
     /// A map of the classes to export to the `JSContext`
-    private let exports: [String: Any] = [
+    let exports: [String: Any] = [
         // UI
         "View": NSView.self,
         "Button": NSButton.self,
@@ -28,20 +21,11 @@ public class QuarkViewController: NSViewController {
         "Logger": Logger.self
     ]
     
-    /// The URL at which the module is located.
-    public let moduleURL: URL
+    /// The jsValue of this window.
+    public var jsWindow: JSWindow!
     
-    /// The module that this Quark instance is based on.
-    public let module: QKModule
-    
-    /// The app delegate.
-    public var appDelegate: JSValue?
-    
-    /// The context in which the main script runs in
-    public let context: JSContext
-    
-    /// Wether or not Quark is running
-    public private(set) var running: Bool = false
+    /// The quark instance that manages everything.
+    public let instance: QKInstance
     
     // MARK: Initiators
     /**
@@ -51,22 +35,9 @@ public class QuarkViewController: NSViewController {
      - parameter virtualMachine: An optional virtual machine that can be
      provided.
      */
-    public init(moduleURL: URL, virtualMachine: JSVirtualMachine? = nil) throws {
-        // Create the context
-        if let virtualMachine = virtualMachine {
-            context = JSContext(virtualMachine: virtualMachine)
-        } else {
-            context = JSContext()
-        }
-        
-        // TEMP: Sets the context
-        QuarkViewController.context = context
-        
-        // Save the URL
-        self.moduleURL = moduleURL
-        
-        // Load the module
-        self.module = try QKModule(url: moduleURL)
+    public init(module: QKModule, virtualMachine: JSVirtualMachine? = nil) throws {
+        // Create an instnace
+        self.instance = try QKInstance(module: module, exports: exports, virtualMachine: virtualMachine)
         
         super.init(nibName: nil, bundle: nil)!
     }
@@ -88,54 +59,33 @@ public class QuarkViewController: NSViewController {
         // Swizzle classes // TODO: Check if they've been swizzled already
         NSView.swizzle()
         
-        // Add the exports to the context
-        addExports()
+        // Create the `JSWindow`
+        jsWindow = JSWindow(instance: instance, window: self)
         
-        // Inject the program into the context
-        do {
-            try module.import(intoContext: context)
-        } catch {
-            print("Could not import module. \(error)")
-        }
-        
-        // Creates an app delegate
-        appDelegate = context.objectForKeyedSubscript(module.info.delegate).construct(withArguments: [])
-        
-        // Start quark
-        start()
+        // Start the instance
+        instance.start(window: self)
     }
-    
-    // MARK: Methods
-    /**
-     Starts the Quark instance, concequently showing the window and
-     executing the script.
-     */
-    private func start() {
-        if !running {
-            let v = NSView()
-            view.addSubview(v)
-            print("VC \(v.quarkContext)")
-            
-            // Save the running state
-            running = true
-            
-            // Call the appropriate method on the app delegate
-            guard let parentView = JSView(context: context, view: view)?.value else {
-                print("Could not get parent view.")
+}
+
+extension QuarkViewController {
+    public var jsRootView: JSValue {
+        get {
+            return view.readOrCreateJSValue(instance: instance)
+        }
+        set(newValue) {
+            guard let nsView = JSView(value: newValue)?.nsView else {
+                Swift.print("Could not get NSView for setting Window root view. \(view)")
                 return
             }
-            // TODO: Construct and save app delegate
-            appDelegate?.invokeMethod("begin", withArguments: [parentView])
+            
+            view = nsView
         }
     }
-    
-    /**
-     Adds exports to the `JSContext` for the appropriate classes.
-     */
-    private func addExports() {
-        // Go through every export and expose it to the context
-        for (key, object) in exports {
-            context.setObject(object, forKeyedSubscript: NSString(string: exportsPrefix + key))
-        }
+}
+
+extension QuarkViewController {
+    public static func createJSValue(context: JSContext) -> JSValue? {
+        print("Cannot create a QuarkViewController from a static context.")
+        return nil
     }
 }
