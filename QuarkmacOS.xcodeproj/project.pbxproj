@@ -27,7 +27,6 @@
 		BF15130C1DAEFAFB00C39871 /* QKButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKButton.swift; sourceTree = "<group>"; };
 		BF462F2D1DAFF6C80037C7F0 /* QKView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QKView.swift; sourceTree = "<group>"; };
 		BF7C36D41DDD365600C1DB00 /* QuarkCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuarkCore.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/Vesto-eepuggcvvroncbgxsofxolsjjwlx/Build/Products/Debug/QuarkCore.framework"; sourceTree = "<group>"; };
-		BF7C36D51DDD365600C1DB00 /* QuarkExports.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuarkExports.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/Vesto-eepuggcvvroncbgxsofxolsjjwlx/Build/Products/Debug/QuarkExports.framework"; sourceTree = "<group>"; };
 		BFF124E91DE838530023661D /* JSAdapter+Cocoa.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "JSAdapter+Cocoa.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,7 +94,6 @@
 			isa = PBXGroup;
 			children = (
 				BF7C36D41DDD365600C1DB00 /* QuarkCore.framework */,
-				BF7C36D51DDD365600C1DB00 /* QuarkExports.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

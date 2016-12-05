@@ -10,7 +10,7 @@ import Cocoa
 import JavaScriptCore
 import QuarkCore
 
-public class QuarkViewController: NSViewController, Window {
+public class QuarkViewController: NSViewController {
     /// A map of the classes to export to the `JSContext`
     let exports: [String: Any] = [
         // UI
@@ -67,7 +67,7 @@ public class QuarkViewController: NSViewController, Window {
     }
 }
 
-extension QuarkViewController {
+extension QuarkViewController: Window {
     public var jsRootView: JSValue {
         get {
             return view.readOrCreateJSValue(instance: instance)
@@ -77,7 +77,7 @@ extension QuarkViewController {
                 Swift.print("Could not get NSView for setting Window root view. \(view)")
                 return
             }
-            
+
             view = nsView
         }
     }

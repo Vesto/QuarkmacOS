@@ -60,7 +60,7 @@ extension NSView {
     internal func qk_layout() {
         self.qk_layout()
         
-        jsView?.invokeMethod("layout", withArguments: [])
+        _ = jsView?.invokeMethod("layout", withArguments: [])
     }
     
     internal private(set) var hasInitialized: Bool {
@@ -106,14 +106,14 @@ extension NSView: View {
                 let instance = instance,
                 let rect = JSRect(instance: instance, cgRect: frame)?.value
             else {
-                print("Unable to convert CGRect.")
+                Swift.print("Unable to convert CGRect.")
                 return JSValue()
             }
             return rect
         }
         set {
             guard let rect = JSRect(value: newValue) else {
-                print("Invalid JSRect.")
+                Swift.print("Invalid JSRect.")
                 return
             }
             frame = rect.cgRect
@@ -124,7 +124,7 @@ extension NSView: View {
     public var jsSubviews: [JSValue] {
         get {
             guard let instance = instance else {
-                print("Cannot get instance for jsSubview.")
+                Swift.print("Cannot get instance for jsSubviews.")
                 return []
             }
             
@@ -134,7 +134,7 @@ extension NSView: View {
     
     public var jsSuperview: JSValue? {
         guard let instance = instance else {
-            print("Cannot get instance for jsSuperview.")
+            Swift.print("Cannot get instance for jsSuperview.")
             return nil
         }
         
@@ -167,7 +167,7 @@ extension NSView: View {
     public var jsBackgroundColor: JSValue {
         get {
             guard let instance = instance else {
-                print("Could not get instance for background color.")
+                Swift.print("Could not get instance for background color.")
                 return JSValue()
             }
             
@@ -185,7 +185,7 @@ extension NSView: View {
     }
     public var jsAlpha: Double {
         get {
-            return jsAlpha
+            return alphaValue.double
         }
         set {
             jsAlpha = newValue
@@ -198,7 +198,7 @@ extension NSView: View {
                 let nsShadow = self.shadow,
                 let shadow = JSShadow(instance: instance, nsShadow: nsShadow)
             else {
-                    print("Could not get shadow.")
+                    Swift.print("Could not get shadow.")
                     return JSValue()
             }
             return shadow.value
@@ -209,10 +209,10 @@ extension NSView: View {
     }
     public var jsCornerRadius: Double {
         get {
-            return Double(layer!.cornerRadius)
+            return assuredLayer.cornerRadius.double
         }
         set {
-            layer?.cornerRadius = CGFloat(newValue)
+            assuredLayer.cornerRadius = CGFloat(newValue)
         }
     }
     
