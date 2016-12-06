@@ -11,6 +11,15 @@ import JavaScriptCore
 import QuarkCore
 
 public class QuarkViewController: NSViewController {
+    /// Swizzles everything and gets called once, since in the static context.
+    static let swizzler: Void = {
+        // Set the classes to swizzle
+        Swizzler.classesToSwizzle = [ NSView.self ]
+
+        // Swizzle them
+        Swizzler.swizzle()
+    }()
+
     /// A map of the classes to export to the `JSContext`
     let exports: [String: Any] = [
         // UI
@@ -55,9 +64,6 @@ public class QuarkViewController: NSViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Swizzle classes // TODO: Check if they've been swizzled already
-        NSView.swizzle()
         
         // Create the `JSWindow`
         jsWindow = JSWindow(instance: instance, window: self)

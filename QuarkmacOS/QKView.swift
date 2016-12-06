@@ -12,7 +12,7 @@ import QuarkCore
 
 /*
  - For arrays, need an adapter so it doesn't generate an entire array every time you index it
-    - e.g. suviews
+    - e.g. subviews
     - JavaScript: view.subviews[0] will make the program take every subview and convert it to JS then be thrown back into the garbage collector
     - Make ArrayAdapter<JSView> { index: Int in return view.subviews[index].jsView }
     - Then when JavaSript wants to subscript it, do view.subviews.atIndex(0)
@@ -23,7 +23,7 @@ import QuarkCore
     - Or do it in the View constructor if the QKView is nil and it creates it
  */
 
-extension NSView {
+extension NSView: Swizzlable {
     /// `JSContext` that holds the `JSValue` for this view.
     public var context: JSContext? {
         return jsView?.context
