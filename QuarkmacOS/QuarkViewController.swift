@@ -36,7 +36,7 @@ public class QuarkViewController: NSViewController {
      provided.
      */
     public init(module: QKModule, virtualMachine: JSVirtualMachine? = nil) throws {
-        // Create an instnace
+        // Create an instance
         self.instance = try QKInstance(module: module, exports: exports, virtualMachine: virtualMachine)
         
         super.init(nibName: nil, bundle: nil)!
