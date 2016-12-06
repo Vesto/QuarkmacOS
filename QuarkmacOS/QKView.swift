@@ -47,8 +47,8 @@ extension NSView {
     }
     
     public static func swizzle() {
-        hookTo(original: Selector("viewWillMoveToWindow:"), swizzled: Selector("qk_viewWillMoveToWindow:"))
-        hookTo(original: Selector("layout"), swizzled: Selector("qk_layout"))
+        hookTo(original: #selector(viewWillMove(toWindow:)), swizzled: #selector(qk_viewWillMove(toWindow:)))
+        hookTo(original: #selector(layout), swizzled: #selector(qk_layout))
     }
     
     func qk_viewWillMove(toWindow newWindow: NSWindow?) {
@@ -56,7 +56,7 @@ extension NSView {
         
         qk_init()
     }
-    
+
     internal func qk_layout() {
         self.qk_layout()
 
@@ -76,7 +76,7 @@ extension NSView {
             )
         }
     }
-    
+
     internal func qk_init() {
         // Assure it has not initiated yet
         guard !hasInitialized else {
@@ -188,7 +188,7 @@ extension NSView: View {
             return alphaValue.double
         }
         set {
-            jsAlpha = newValue
+            alphaValue = newValue.cgFloat
         }
     }
     public var jsShadow: JSValue {
@@ -242,8 +242,8 @@ extension NSView {
             // Create a layer
             wantsLayer = true
             
-            // Recursively ask for layer again, since it should exist now
-            return assuredLayer
+            // Return the new layer
+            return layer!
         }
     }
 }
