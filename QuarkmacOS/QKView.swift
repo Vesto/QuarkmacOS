@@ -59,7 +59,7 @@ extension NSView {
     
     internal func qk_layout() {
         self.qk_layout()
-        
+
         _ = jsView?.invokeMethod("layout", withArguments: [])
     }
     

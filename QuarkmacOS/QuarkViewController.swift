@@ -65,6 +65,13 @@ public class QuarkViewController: NSViewController {
         // Start the instance
         instance.start(window: self)
     }
+
+    public override func viewDidLayout() {
+        super.viewDidLayout()
+
+        // Include this so `view.layout` gets called (doesn't get called otherwise for some reason)
+    }
+
 }
 
 extension QuarkViewController: Window {
