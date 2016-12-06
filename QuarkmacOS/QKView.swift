@@ -24,19 +24,14 @@ import QuarkCore
  */
 
 extension NSView {
-    public var quarkContext: QuarkViewController? {
-        var responder: NSResponder? = self
-        while responder != nil {
-            if let quark = responder as? QuarkViewController {
-                return quark
-            }
-            responder = responder?.nextResponder
-        }
-        return nil
+    /// `JSContext` that holds the `JSValue` for this view.
+    public var context: JSContext? {
+        return jsView?.context
     }
-    
+
+    /// `QKInstance` that this view belongs to.
     public var instance: QKInstance? {
-        return quarkContext?.instance
+        return context?.instance
     }
 }
 
