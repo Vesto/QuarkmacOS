@@ -11,15 +11,6 @@ import JavaScriptCore
 import QuarkCore
 
 public class QuarkViewController: NSViewController {
-    /// Swizzles everything and gets called once, since in the static context.
-    static let swizzler: Void = {
-        // Set the classes to swizzle
-        Swizzler.classesToSwizzle = [ NSView.self ]
-
-        // Swizzle them
-        Swizzler.swizzle()
-    }()
-
     /// A map of the classes to export to the `JSContext`
     let exports: [String: Any] = [
         // UI
@@ -45,6 +36,9 @@ public class QuarkViewController: NSViewController {
      provided.
      */
     public init(module: QKModule, virtualMachine: JSVirtualMachine? = nil) throws {
+        // Swizzle the appropriate views
+        Swizzler.swizzle(classes: [ NSView.self ])
+
         // Create an instance
         self.instance = try QKInstance(module: module, exports: exports, virtualMachine: virtualMachine)
         
@@ -75,9 +69,8 @@ public class QuarkViewController: NSViewController {
     public override func viewDidLayout() {
         super.viewDidLayout()
 
-        // Include this so `view.layout` gets called (doesn't get called otherwise for some reason)
+        // Override this so view.layout is called (otherwise, it isn't for some reason)
     }
-
 }
 
 extension QuarkViewController: Window {

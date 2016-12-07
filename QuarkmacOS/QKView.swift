@@ -23,7 +23,7 @@ import QuarkCore
     - Or do it in the View constructor if the QKView is nil and it creates it
  */
 
-extension NSView: Swizzlable {
+extension NSView {
     /// `JSContext` that holds the `JSValue` for this view.
     public var context: JSContext? {
         return jsView?.context
@@ -35,12 +35,26 @@ extension NSView: Swizzlable {
     }
 }
 
-extension NSView {
+extension NSView: Swizzlable {
     fileprivate struct AssociatedKeys {
-        static var JSViewName = "JSViewName"
         static var HasInitialized = "HasInitialized"
+        static var HasSwizzled = "HasSwizzled"
     }
-    
+
+    public static var swizzled: Bool {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.HasSwizzled) as? Bool ?? false
+        }
+        set {
+            objc_setAssociatedObject(
+                    self,
+                    &AssociatedKeys.HasSwizzled,
+                    newValue,
+                    .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+
     public static func swizzle() {
         hookTo(original: #selector(viewWillMove(toWindow:)), swizzled: #selector(qk_viewWillMove(toWindow:)))
         hookTo(original: #selector(layout), swizzled: #selector(qk_layout))
@@ -80,6 +94,9 @@ extension NSView {
         
         // Set initiated
         hasInitialized = true
+
+        // Flag this view needs `layout` called
+        needsLayout = true
     }
 }
 
