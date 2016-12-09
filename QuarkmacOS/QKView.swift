@@ -38,6 +38,7 @@ extension NSView {
 extension NSView: Swizzlable {
     fileprivate struct AssociatedKeys {
         static var HasInitialized = "HasInitialized"
+        static var HasJSInitialized = "HasJSInitialized"
         static var HasSwizzled = "HasSwizzled"
     }
 
@@ -55,7 +56,8 @@ extension NSView: Swizzlable {
         }
     }
 
-    public static func swizzle() {
+    public class func swizzle() {
+        Swift.print("View swizzle")
         hookTo(original: #selector(viewWillMove(toWindow:)), swizzled: #selector(qk_viewWillMove(toWindow:)))
         hookTo(original: #selector(layout), swizzled: #selector(qk_layout))
     }
@@ -64,12 +66,6 @@ extension NSView: Swizzlable {
         self.qk_viewWillMove(toWindow: newWindow)
         
         qk_init()
-    }
-
-    internal func qk_layout() {
-        self.qk_layout()
-
-        _ = jsView?.invokeMethod("layout", withArguments: [])
     }
     
     internal private(set) var hasInitialized: Bool {
@@ -85,6 +81,20 @@ extension NSView: Swizzlable {
             )
         }
     }
+    
+    internal private(set) var hasJSInitialized: Bool {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.HasJSInitialized) as? Bool ?? false
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &AssociatedKeys.HasJSInitialized,
+                newValue,
+                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
 
     internal func qk_init() {
         // Assure it has not initiated yet
@@ -94,9 +104,20 @@ extension NSView: Swizzlable {
         
         // Set initiated
         hasInitialized = true
-
+    }
+    
+    internal func qk_js_init() { // When the JavaScript object is set, do some stuff
         // Flag this view needs `layout` called
         needsLayout = true
+        
+        // Add a tracking area
+        createTrackingArea()
+    }
+    
+    internal func qk_layout() {
+        self.qk_layout()
+        
+        _ = jsView?.invokeMethod("layout", withArguments: [])
     }
 }
 
@@ -108,6 +129,7 @@ extension NSView: View {
         }
         set {
             jsValue = newValue
+            qk_js_init()
         }
     }
     
@@ -234,6 +256,276 @@ extension NSView: View {
     /// Creates a new view with a JSView.
     public convenience init(jsView: JSValue) {
         self.init()
+    }
+}
+
+extension NSView { // https://developer.apple.com/reference/appkit/nsresponder // TODO: Tablet stuff?
+    /* Mouse Events */
+    open override func mouseDown(with event: NSEvent) {
+        super.mouseDown(with: event)
+        handleInput(event)
+    }
+    
+    open override func mouseDragged(with event: NSEvent) {
+        super.mouseDragged(with: event)
+        handleInput(event)
+    }
+    
+    open override func mouseUp(with event: NSEvent) {
+        super.mouseUp(with: event)
+        handleInput(event)
+    }
+    
+    open override func mouseMoved(with event: NSEvent) {
+        super.mouseMoved(with: event)
+        handleInput(event)
+    }
+    
+    open override func mouseEntered(with event: NSEvent) {
+        super.mouseEntered(with: event)
+        handleInput(event)
+    }
+    
+    open override func mouseExited(with event: NSEvent) {
+        super.mouseExited(with: event)
+        handleInput(event)
+    }
+    
+    open override func scrollWheel(with event: NSEvent) {
+        super.scrollWheel(with: event)
+        handleInput(event)
+    }
+    
+    open override func rightMouseDown(with event: NSEvent) {
+        super.rightMouseDown(with: event)
+        handleInput(event)
+    }
+    
+    open override func rightMouseDragged(with event: NSEvent) {
+        super.rightMouseDragged(with: event)
+        handleInput(event)
+    }
+    
+    open override func rightMouseUp(with event: NSEvent) {
+        super.rightMouseUp(with: event)
+        handleInput(event)
+    }
+    
+    open override func otherMouseDown(with event: NSEvent) {
+        super.otherMouseDown(with: event)
+        handleInput(event)
+    }
+    
+    open override func otherMouseDragged(with event: NSEvent) {
+        super.otherMouseDragged(with: event)
+        handleInput(event)
+    }
+    
+    open override func otherMouseUp(with event: NSEvent) {
+        super.otherMouseUp(with: event)
+        handleInput(event)
+    }
+    
+    /* Keyboard Events */
+    open override func keyDown(with event: NSEvent) {
+        super.keyDown(with: event)
+        handleInput(event)
+    }
+    
+    open override func keyUp(with event: NSEvent) {
+        super.keyUp(with: event)
+        handleInput(event)
+    }
+    
+    /* Tracking area */
+    func createTrackingArea() {
+        guard trackingAreas.count == 0 else {
+            return
+        }
+        
+        var options: NSTrackingAreaOptions = [.mouseEnteredAndExited, .activeInActiveApp, .inVisibleRect, .enabledDuringMouseDrag]
+        let trackingArea = NSTrackingArea(rect: CGRect.zero, options: options, owner: self, userInfo: nil)
+        self.addTrackingArea(trackingArea)
+    }
+    
+    /* Input handler */
+    enum EventType {
+        case interaction(JSInteractionEvent.JSInteractionType, JSEventPhase), key(isDown: Bool), scroll
+    }
+    
+    func handleInput(_ event: NSEvent) {
+        guard let jsView = jsView else {
+            return
+        }
+        
+//        Swift.print("~~~~~~~~~~~")
+//        Swift.print("Event: \(event)")
+        
+        // Get the event
+        let e: EventType
+        switch event.type {
+        case .leftMouseDown:
+            e = .interaction(.leftMouse, .began)
+        case .leftMouseDragged:
+            e = .interaction(.leftMouse, .changed)
+        case .leftMouseUp:
+            e = .interaction(.leftMouse, .ended)
+            
+        case .rightMouseDown:
+            e = .interaction(.rightMouse, .began)
+        case .rightMouseDragged:
+            e = .interaction(.rightMouse, .changed)
+        case .rightMouseUp:
+            e = .interaction(.rightMouse, .ended)
+            
+        case .otherMouseDown:
+            e = .interaction(.otherMouse, .began)
+        case .otherMouseUp:
+            e = .interaction(.otherMouse, .changed)
+        case .otherMouseDragged:
+            e = .interaction(.otherMouse, .ended)
+            
+        case .mouseEntered:
+            e = .interaction(.hover, .began)
+        case .mouseMoved:
+            e = .interaction(.hover, .changed)
+        case .mouseExited:
+            e = .interaction(.hover, .ended)
+            
+        case .scrollWheel:
+            e = .scroll
+            
+        case .keyDown:
+            e = .key(isDown: true)
+        case .keyUp:
+            e = .key(isDown: false)
+        
+        default:
+            // Unsupported input type
+            return
+        }
+        
+        // Create the event object
+        guard let instance = instance, let window = instance.window as? QuarkViewController else {
+            print("Could not get instance and window for event.")
+            return
+        }
+        
+        // Get the location into window's coordinates
+        let location = window.view.convert(event.locationInWindow, from: nil)
+        guard let jsLocation = JSPoint(instance: instance, cgPoint: location) else {
+            print("Could not convert location.")
+            return
+        }
+        
+        switch e {
+        case .interaction(let type, let phase):
+            // Get the click-specific events
+            let count: Int
+            let pressure: Float
+            if case .hover = type { // Not a click
+                count = 0
+                pressure = 0
+            } else { // Is a click
+                count = event.clickCount
+                pressure = event.pressure
+            }
+            
+            // Create the event
+            guard let event = JSInteractionEvent(
+                instance: instance,
+                time: event.timestamp,
+                type: type,
+                phase: phase,
+                location: jsLocation, // Convert point from the window
+                count: UInt32(count),
+                pressure: Double(pressure)
+            ) else {
+                Swift.print("Could not create JSInteractionEvent.")
+                return
+            }
+            
+            // Send the event
+            jsView.invokeMethod("interactionEvent", withArguments: [event.value])
+        case .key(let isDown):
+            // Process the modifiers
+            var modifiers = Array<JSKeyEvent.JSKeyModifier>()
+            switch event.modifierFlags {
+            case NSEventModifierFlags.capsLock:
+                modifiers.append(.capsLock)
+            case NSEventModifierFlags.command:
+                modifiers.append(.meta)
+            case NSEventModifierFlags.control:
+                modifiers.append(.control)
+            case NSEventModifierFlags.option:
+                modifiers.append(.option)
+            case NSEventModifierFlags.shift:
+                modifiers.append(.shift)
+            default:
+                Swift.print("Unsupported NSEventModifierFlags used: \(event.modifierFlags)")
+            }
+            
+            // Create the event
+            guard let event = JSKeyEvent(
+                instance: instance,
+                time: event.timestamp,
+                phase: isDown ? .keyDown : .keyUp,
+                isRepeat: event.isARepeat,
+                keyCode: UInt32(event.keyCode),
+                modifiers: []
+            ) else {
+                Swift.print("Could not create JSKeyEvent.")
+                return
+            }
+            
+            // Send the event
+            jsView.invokeMethod("keyEvent", withArguments: [event.value])
+        case .scroll:
+            // Get the scrolling phase
+            let phase: JSEventPhase
+            switch event.phase {
+            case NSEventPhase.began:
+                phase = .began
+            case NSEventPhase.stationary:
+                phase = .stationary
+            case NSEventPhase.changed:
+                phase = .changed
+            case NSEventPhase.ended:
+                phase = .ended
+            case NSEventPhase.cancelled:
+                phase = .cancelled
+            default:
+                Swift.print("Unsupported NSEventPhase used: \(event.phase)")
+                return
+            }
+            
+            // Get the delta scroll
+            guard let deltaScroll = JSPoint(
+                instance: instance,
+                x: event.scrollingDeltaX.double,
+                y: event.scrollingDeltaY.double
+            ) else {
+                Swift.print("Could not get scrolling delta.")
+                return
+            }
+            
+            // Create the event
+            guard let event = JSScrollEvent(
+                instance: instance,
+                time: event.timestamp,
+                phase: phase,
+                location: jsLocation,
+                deltaScroll: deltaScroll
+            ) else {
+                Swift.print("Could not create JSScrollEvent.")
+                return
+            }
+            
+            // Send the event
+            jsView.invokeMethod("scrollEvent", withArguments: [event.value])
+        }
+        
+//        Swift.print("~~~~~~~~~~~")
     }
 }
 

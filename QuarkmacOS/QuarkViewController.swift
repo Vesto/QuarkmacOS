@@ -37,7 +37,7 @@ public class QuarkViewController: NSViewController {
      */
     public init(module: QKModule, virtualMachine: JSVirtualMachine? = nil) throws {
         // Swizzle the appropriate views
-        Swizzler.swizzle(classes: [ NSView.self ])
+        Swizzler.swizzle(classes: [ NSView.self, NSButton.self ])
 
         // Create an instance
         self.instance = try QKInstance(module: module, exports: exports, virtualMachine: virtualMachine)

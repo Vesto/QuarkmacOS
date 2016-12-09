@@ -21,11 +21,20 @@ extension NSButton: Button {
 }
 
 extension NSButton {
+    public override class func swizzle() {
+        
+    }
+}
+
+extension NSButton {
     override func qk_init() {
         super.qk_init()
         
         // Set the button style
-//        bezelStyle = NSBezelStyle.rounded
         bezelStyle = NSBezelStyle.regularSquare
     }
 }
+
+
+// TODO: Deal with weird events: http://stackoverflow.com/questions/22389685/nsbutton-mousedown-mouseup-behaving-differently-on-enabled
+// TODO: Probably want to set target/action since some events don't even register
