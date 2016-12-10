@@ -26,7 +26,7 @@ import QuarkCore
 extension NSView {
     /// `JSContext` that holds the `JSValue` for this view.
     public var context: JSContext? {
-        return jsView?.context
+        return jsValue?.context
     }
 
     /// `QKInstance` that this view belongs to.
@@ -117,19 +117,27 @@ extension NSView: Swizzlable {
     internal func qk_layout() {
         self.qk_layout()
         
-        _ = jsView?.invokeMethod("layout", withArguments: [])
+        _ = jsValue?.invokeMethod("layout", withArguments: [])
     }
 }
 
 extension NSView: View {
     /* JavaScript Interop */
-    public var jsView: JSValue? {
+    public var jsView: JSValue {
         get {
-            return jsValue
+            guard let instance = instance else { // TODO: Catch 22 here, cannot get instance if cannot get jsValue // Maybe use old method of recursively going through next responders to find partent
+                Swift.print("Could not get instance for jsView.")
+                return JSValue()
+            }
+            
+            Swift.print("Getting JSView \(jsValue)")
+            
+            return readOrCreateJSValue(instance: instance)
         }
         set {
             jsValue = newValue
             qk_js_init()
+            Swift.print("Set JSView \(jsValue) \(jsView) \(jsValue == jsView)")
         }
     }
     
@@ -155,31 +163,22 @@ extension NSView: View {
     }
     
     /* View hierarchy */
-    public var jsSubviews: [JSValue] {
+    public var jsSubviews: [View] {
         get {
-            guard let instance = instance else {
-                Swift.print("Cannot get instance for jsSubviews.")
-                return []
-            }
-            
-            return subviews.map { $0.readOrCreateJSValue(instance: instance) }
+            return subviews
         }
     }
     
-    public var jsSuperview: JSValue? {
-        guard let instance = instance else {
-            Swift.print("Cannot get instance for jsSuperview.")
-            return nil
-        }
-        
-        return superview?.readOrCreateJSValue(instance: instance)
+    public var jsSuperview: View? {
+        return superview
     }
     
-    public func jsAddSubview(_ view: JSValue) {
-        guard let nsView = JSView(value: view)?.nsView else {
+    public func jsAddSubview(_ view: View) {
+        guard let nsView = view as? NSView else {
             Swift.print("Could not get NSView for adding subview. \(view)")
             return
         }
+        
         addSubview(nsView)
     }
     
@@ -225,20 +224,25 @@ extension NSView: View {
             alphaValue = newValue.cgFloat
         }
     }
-    public var jsShadow: JSValue {
+    public var jsShadow: JSValue? {
         get {
-            guard
-                let instance = instance,
-                let nsShadow = self.shadow,
-                let shadow = JSShadow(instance: instance, nsShadow: nsShadow)
-            else {
-                    Swift.print("Could not get shadow.")
-                    return JSValue()
+            guard let instance = instance else {
+                print("Could not get instance for shadow.")
+                return JSValue()
             }
-            return shadow.value
+            
+            if let nsShadow = self.shadow, let shadow = JSShadow(instance: instance, nsShadow: nsShadow) {
+                return shadow.value
+            } else {
+                return JSValue(undefinedIn: instance.context)
+            }
         }
         set {
-            shadow = JSShadow(value: newValue)?.nsShadow
+            if let newValue = newValue {
+                shadow = JSShadow(value: newValue)?.nsShadow
+            } else {
+                shadow = nil
+            }
         }
     }
     public var jsCornerRadius: Double {
@@ -248,14 +252,6 @@ extension NSView: View {
         set {
             assuredLayer.cornerRadius = CGFloat(newValue)
         }
-    }
-    
-    /* TODO: Animations like SpriteKit */
-    
-    /* Initiator */
-    /// Creates a new view with a JSView.
-    public convenience init(jsView: JSValue) {
-        self.init()
     }
 }
 
@@ -354,7 +350,7 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
     }
     
     func handleInput(_ event: NSEvent) {
-        guard let jsView = jsView else {
+        guard let jsValue = jsValue else {
             return
         }
         
@@ -446,7 +442,7 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             }
             
             // Send the event
-            jsView.invokeMethod("interactionEvent", withArguments: [event.value])
+            jsValue.invokeMethod("interactionEvent", withArguments: [event.value])
         case .key(let isDown):
             // Process the modifiers
             var modifiers = Array<JSKeyEvent.JSKeyModifier>()
@@ -479,7 +475,7 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             }
             
             // Send the event
-            jsView.invokeMethod("keyEvent", withArguments: [event.value])
+            jsValue.invokeMethod("keyEvent", withArguments: [event.value])
         case .scroll:
             // Get the scrolling phase
             let phase: JSEventPhase
@@ -508,7 +504,6 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
                 Swift.print("Could not get scrolling delta.")
                 return
             }
-            
             // Create the event
             guard let event = JSScrollEvent(
                 instance: instance,
@@ -522,17 +517,15 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             }
             
             // Send the event
-            jsView.invokeMethod("scrollEvent", withArguments: [event.value])
+            jsValue.invokeMethod("scrollEvent", withArguments: [event.value])
         }
-        
-//        Swift.print("~~~~~~~~~~~")
     }
 }
 
 extension NSView {
-    // This is here because `createJSValue` cannot be overriden on a protocol for some reason.
-    public static func createJSValue(instance: QKInstance) -> JSValue? {
-        return NSView.createJSView(instance: instance)?.value
+    public func createJSValue(instance: QKInstance) -> JSValue? {
+        // new View(<QKView>, false)
+        return instance.quarkLibrary.objectForKeyedSubscript("View").construct(withArguments: [self, false])
     }
 }
 

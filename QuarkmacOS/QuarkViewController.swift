@@ -74,16 +74,16 @@ public class QuarkViewController: NSViewController {
 }
 
 extension QuarkViewController: Window {
-    public var jsRootView: JSValue {
+    public var jsRootView: View {
         get {
-            return view.readOrCreateJSValue(instance: instance)
+            return view
         }
         set(newValue) {
-            guard let nsView = JSView(value: newValue)?.nsView else {
+            guard let nsView = newValue as? NSView else {
                 Swift.print("Could not get NSView for setting Window root view. \(view)")
                 return
             }
-
+            
             view = nsView
         }
     }
