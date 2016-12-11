@@ -169,13 +169,21 @@ extension NSView: View {
         return superview
     }
     
-    public func jsAddSubview(_ view: View) {
+    public func jsAddSubview(_ view: View, _ index: Int) {
         guard let nsView = view as? NSView else {
             Swift.print("Could not get NSView for adding subview. \(view)")
             return
         }
         
-        addSubview(nsView)
+        let isLast = index >= subviews.endIndex
+        
+        if isLast {
+            // Adds the subview at the top (aka the largest index)
+            addSubview(nsView)
+        } else {
+            // Adds the subview below the view at the index
+            addSubview(nsView, positioned: isLast ? .above : .below, relativeTo: subviews[index])
+        }
     }
     
     public func jsRemoveFromSuperview() {
