@@ -303,92 +303,92 @@ extension QuarkViewController {
     
     /* Mouse Events */
     open override func mouseDown(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseDown(with: event)
         }
     }
     
     open override func mouseDragged(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseDragged(with: event)
         }
     }
     
     open override func mouseUp(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseUp(with: event)
         }
     }
     
     open override func mouseMoved(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseMoved(with: event)
         }
     }
     
     open override func mouseEntered(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseEntered(with: event)
         }
     }
     
     open override func mouseExited(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.mouseExited(with: event)
         }
     }
     
     open override func scrollWheel(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.scrollWheel(with: event)
         }
     }
     
     open override func rightMouseDown(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.rightMouseDown(with: event)
         }
     }
     
     open override func rightMouseDragged(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.rightMouseDragged(with: event)
         }
     }
     
     open override func rightMouseUp(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.rightMouseUp(with: event)
         }
     }
     
     open override func otherMouseDown(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.otherMouseDown(with: event)
         }
     }
     
     open override func otherMouseDragged(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.otherMouseDragged(with: event)
         }
     }
     
     open override func otherMouseUp(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.otherMouseUp(with: event)
         }
     }
     
     /* Keyboard Events */
     open override func keyDown(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.keyDown(with: event)
         }
     }
     
     open override func keyUp(with event: NSEvent) {
-        if !handleInput(event, jsWindow.value, instance) {
+        if !handleInput(event, instance.moduleDelegate, instance) {
             super.keyUp(with: event)
         }
     }
