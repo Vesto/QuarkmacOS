@@ -57,7 +57,6 @@ extension NSView: Swizzlable {
     }
 
     public class func swizzle() {
-        Swift.print("View swizzle")
         hookTo(original: #selector(viewWillMove(toWindow:)), swizzled: #selector(qk_viewWillMove(toWindow:)))
         hookTo(original: #selector(layout), swizzled: #selector(qk_layout))
     }
@@ -130,14 +129,11 @@ extension NSView: View {
                 return JSValue()
             }
             
-            Swift.print("Getting JSView \(jsValue)")
-            
             return readOrCreateJSValue(instance: instance)
         }
         set {
             jsValue = newValue
             qk_js_init()
-            Swift.print("Set JSView \(jsValue) \(jsView) \(jsValue == jsView)")
         }
     }
     
@@ -458,7 +454,8 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             case NSEventModifierFlags.shift:
                 modifiers.append(.shift)
             default:
-                Swift.print("Unsupported NSEventModifierFlags used: \(event.modifierFlags)")
+                // Unsupported modifier flag, do nothing
+                break
             }
             
             // Create the event
@@ -491,7 +488,7 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             case NSEventPhase.cancelled:
                 phase = .cancelled
             default:
-                Swift.print("Unsupported NSEventPhase used: \(event.phase)")
+                // Unsupported phase, do nothing
                 return
             }
             
