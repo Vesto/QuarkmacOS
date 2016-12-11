@@ -73,6 +73,7 @@ public class QuarkViewController: NSViewController {
     }
 }
 
+// MARK: Window
 extension QuarkViewController: Window {
     public var jsRootView: View {
         get {
@@ -86,12 +87,5 @@ extension QuarkViewController: Window {
             
             view = nsView
         }
-    }
-}
-
-extension QuarkViewController {
-    public static func createJSValue(context: JSContext) -> JSValue? {
-        print("Cannot create a QuarkViewController from a static context.")
-        return nil
     }
 }
