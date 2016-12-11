@@ -33,6 +33,27 @@ extension NSButton {
         // Set the button style
         bezelStyle = NSBezelStyle.regularSquare
     }
+    
+    open override func mouseDown(with event: NSEvent) {
+        // Has to call `handleInput` manually because the superclass
+        // `NSButton` overrides it and doesn't call its superclass.
+        if !handleInput(event, jsValue, instance) {
+            nextResponder?.mouseDown(with: event)
+        }
+        
+        // Has to manually highlight the button since not calling the
+        // superclass.
+        isHighlighted = true
+    }
+    
+    open override func mouseUp(with event: NSEvent) {
+        // Call `super` to have the event handled
+        super.mouseUp(with: event)
+        
+        // Unhighlight and send event.
+        isHighlighted = false
+        performClick(self)
+    }
 }
 
 
