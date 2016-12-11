@@ -496,7 +496,7 @@ extension NSView { // https://developer.apple.com/reference/appkit/nsresponder /
             }
             
             // Get the delta scroll
-            guard let deltaScroll = JSPoint(
+            guard let deltaScroll = JSVector(
                 instance: instance,
                 x: event.scrollingDeltaX.double,
                 y: event.scrollingDeltaY.double
