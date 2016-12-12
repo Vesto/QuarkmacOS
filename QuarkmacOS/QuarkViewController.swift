@@ -18,7 +18,8 @@ public class QuarkViewController: NSViewController {
         "Button": NSButton.self,
         
         // Core
-        "Logger": Logger.self
+        "Logger": JSLogger.self,
+        "Module": JSModule.self
     ]
     
     /// The jsValue of this window.
@@ -85,6 +86,13 @@ extension QuarkViewController: Window {
                 return
             }
             
+            // Tell the current view not to suppress superviews anymore
+            view.suppressSuperview = false
+            
+            // Tell the new view to suppress the superviews
+            nsView.suppressSuperview = true
+            
+            // Set the view
             view = nsView
         }
     }

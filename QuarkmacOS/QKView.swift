@@ -40,6 +40,7 @@ extension NSView: Swizzlable {
         static var HasInitialized = "HasInitialized"
         static var HasJSInitialized = "HasJSInitialized"
         static var HasSwizzled = "HasSwizzled"
+        static var SuppressSuperview = "SuppressSuperview"
     }
 
     public static var swizzled: Bool {
@@ -47,12 +48,7 @@ extension NSView: Swizzlable {
             return objc_getAssociatedObject(self, &AssociatedKeys.HasSwizzled) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(
-                    self,
-                    &AssociatedKeys.HasSwizzled,
-                    newValue,
-                    .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
+            objc_setAssociatedObject(self, &AssociatedKeys.HasSwizzled, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -72,12 +68,7 @@ extension NSView: Swizzlable {
             return objc_getAssociatedObject(self, &AssociatedKeys.HasInitialized) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(
-                self,
-                &AssociatedKeys.HasInitialized,
-                newValue,
-                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
+            objc_setAssociatedObject(self, &AssociatedKeys.HasInitialized, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
     
@@ -86,12 +77,7 @@ extension NSView: Swizzlable {
             return objc_getAssociatedObject(self, &AssociatedKeys.HasJSInitialized) as? Bool ?? false
         }
         set {
-            objc_setAssociatedObject(
-                self,
-                &AssociatedKeys.HasJSInitialized,
-                newValue,
-                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
-            )
+            objc_setAssociatedObject(self, &AssociatedKeys.HasJSInitialized, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
 
@@ -159,6 +145,15 @@ extension NSView: View {
     }
     
     /* View hierarchy */
+    internal var suppressSuperview: Bool {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.SuppressSuperview) as? Bool ?? false
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.SuppressSuperview, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
     public var jsSubviews: [View] {
         get {
             return subviews
@@ -166,7 +161,11 @@ extension NSView: View {
     }
     
     public var jsSuperview: View? {
-        return superview
+        if suppressSuperview { // Don't give superview if not supposed to
+            return nil
+        } else {
+            return superview
+        }
     }
     
     public func jsAddSubview(_ view: View, _ index: Int) {
