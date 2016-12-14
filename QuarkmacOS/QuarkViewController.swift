@@ -16,6 +16,7 @@ public class QuarkViewController: NSViewController {
         // UI
         "View": NSView.self,
         "Button": NSButton.self,
+        "Label": NSLabel.self,
         
         // Core
         "Logger": JSLogger.self,
